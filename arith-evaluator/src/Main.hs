@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Monad (forever)
+import System.IO (stdout, hFlush)
 import Lexer
 import Parser
 
@@ -18,6 +19,8 @@ parse l = do
 
 main :: IO ()
 main = forever $ do
+  putStr "arith-evaluator> "
+  hFlush stdout
   l <- getLine
   case parse l of
     Left err -> putStrLn err

@@ -16,3 +16,4 @@ executable main
   other-modules:
     Lexer
     Parser
+    Main
