@@ -16,6 +16,7 @@ executable main
   build-tools:         alex, happy
   ghc-options:         -O2 -Wall
   other-modules:
+    Evaluator
     Lexer
     Parser
     Type
