@@ -5,16 +5,23 @@ import System.IO (stdout, hFlush)
 
 import Lexer (alexScanTokens)
 import Parser (happyParseRE)
+import NFA (build, accept)
 import Type
 
-re :: String -> Either String RE
-re str = do
+getNFA :: String -> Either String NFA
+getNFA str = do
   tokens <- alexScanTokens str
-  happyParseRE tokens
-  
+  re <- happyParseRE tokens
+  return $ build re
+
 main :: IO ()
 main = forever $ do
   putStr "regex> "
   hFlush stdout
-  l <- getLine
-  putStrLn $ show $ re l
+  nfa <- getNFA <$> getLine
+  case nfa of
+    Left err -> putStrLn err
+    Right nfa -> do
+      putStr "text> "
+      hFlush stdout
+      print =<< (accept nfa <$> getLine)

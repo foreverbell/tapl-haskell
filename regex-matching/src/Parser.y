@@ -29,7 +29,7 @@ import Type
 %%
 
 RE :: { RE }
-  : RE '|' SimpleRE   { REAlternative $1 $3 }
+  : RE '|' SimpleRE   { REUnion $1 $3 }
   | SimpleRE          { $1 }
 
 SimpleRE :: { RE }
@@ -42,10 +42,10 @@ BasicRE :: { RE }
   | ElementaryRE      { $1 }
 
 Star :: { RE }
-  : ElementaryRE '*'  { REStar $1 }
+  : ElementaryRE '*'  { REKleeneStar $1 }
 
 Plus :: { RE }
-  : ElementaryRE '+'  { REPlus $1 }
+  : ElementaryRE '+'  { REKleenePlus $1 }
 
 ElementaryRE :: { RE }
   : Group             { $1 }
