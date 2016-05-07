@@ -1,4 +1,4 @@
-module Type ( 
+module Types ( 
   Line, Column, LocationInfo
 , Located (..)
 , unLocate
@@ -30,3 +30,4 @@ data Term
   | TermIsZero Term
   | TermIfThenElse Term Term Term
   | TermSucc Term | TermPred Term
+  deriving (Show)

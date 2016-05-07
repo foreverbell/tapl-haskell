@@ -9,7 +9,7 @@ import Data.Char (ord)
 import Data.Maybe (fromMaybe)
 import Data.Word (Word8)
 
-import Type
+import Types
 
 }
 

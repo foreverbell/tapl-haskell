@@ -1,4 +1,4 @@
-module Type ( 
+module Types ( 
   Token (..)
 , RE (..)
 , SetItem (..)

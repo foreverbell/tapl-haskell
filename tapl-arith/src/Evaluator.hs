@@ -2,7 +2,7 @@ module Evaluator (
   eval 
 ) where
 
-import Type
+import Types
 
 isNumericVal :: Term -> Bool
 isNumericVal TermZero = True
@@ -69,6 +69,6 @@ evalFull t = case eval1 t of
 eval :: Term -> Either String Term
 eval term = if isVal nf
   then Right nf
-  else Left "eval error, term is malformed"
+  else Left "eval error: term is malformed"
   where 
     nf = evalFull term

@@ -7,7 +7,7 @@ import           Data.List (group, sort)
 import           Data.Maybe (fromJust, isJust)
 import qualified Data.Sequence as Seq
 import qualified Data.Set as Set
-import           Type
+import           Types
 
 itranslate :: SetItem -> TransitionRule
 itranslate (ItemChar c) = TransChar c

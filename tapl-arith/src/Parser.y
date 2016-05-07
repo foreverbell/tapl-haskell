@@ -4,7 +4,7 @@ module Parser (
   happyParseTerms
 ) where
 
-import Type
+import Types
 
 }
 

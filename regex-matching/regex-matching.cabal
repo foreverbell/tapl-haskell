@@ -21,4 +21,4 @@ executable main
     Lexer
     Parser
     NFA
-    Type
+    Types

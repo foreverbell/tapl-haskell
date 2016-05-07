@@ -6,7 +6,7 @@ import System.IO (stdout, hFlush)
 import Lexer (alexScanTokens)
 import Parser (happyParseRE)
 import NFA (build, accept)
-import Type
+import Types
 
 getNFA :: String -> Either String NFA
 getNFA str = do

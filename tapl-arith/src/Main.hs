@@ -6,7 +6,7 @@ import System.IO (stdout, hFlush)
 import Lexer (alexScanTokens)
 import Parser (happyParseTerms)
 import Evaluator (eval)
-import Type
+import Types
 
 pprint :: Term -> String
 pprint TermTrue = "true"

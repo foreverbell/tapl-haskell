@@ -4,7 +4,7 @@ module Parser (
   happyParseRE
 ) where
 
-import Type
+import Types
 
 }
 
