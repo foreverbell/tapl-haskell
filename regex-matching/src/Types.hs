@@ -1,4 +1,4 @@
-module Types ( 
+module Types (
   Token (..)
 , RE (..)
 , SetItem (..)
@@ -8,7 +8,7 @@ module Types (
 
 import qualified Data.Sequence as S
 
-data Token 
+data Token
   = TokenChar Char
   | TokenDot                            -- .
   | TokenPlus | TokenHyphen | TokenStar -- +-*
@@ -18,7 +18,7 @@ data Token
   | TokenOParen | TokenCParen           -- ()
   deriving (Show)
 
-data RE 
+data RE
   = REConcatenation RE RE
   | REUnion RE RE
   | REKleeneStar RE

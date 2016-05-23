@@ -1,15 +1,15 @@
 {
 
 module Parser (
-  happyParseExp
-, Exp (..)
+  parseTree
+, Expr (..)
 ) where
 
-import Lexer (Token (..), Located (..))
+import Lexer (scanTokens, Token (..), Located (..))
 
 }
 
-%name happyParseExp Exp
+%name parse Expr
 %tokentype { Located Token }
 %monad { Either String }
 %error { parseError }
@@ -24,29 +24,32 @@ import Lexer (Token (..), Located (..))
 
 %%
 
-Exp :: { Exp }
-  : Exp '+' Term    { Plus $1 $3 }
-  | Exp '-' Term    { Minus $1 $3 }
+Expr :: { Expr }
+  : Expr '+' Term    { Plus $1 $3 }
+  | Expr '-' Term    { Minus $1 $3 }
   | Term            { $1 }
 
-Term :: { Exp }
+Term :: { Expr }
   : Term '*' Factor { Mult $1 $3}
   | Factor          { $1 }
 
-Factor :: { Exp }
+Factor :: { Expr }
   : int             { Int $1 }
-  | '(' Exp ')'     { $2 }
+  | '(' Expr ')'     { $2 }
 
 {
+
+parseTree :: String -> Either String Expr
+parseTree str = parse =<< scanTokens str
 
 parseError :: [Located Token] -> Either String a
 parseError [] = Left $ "parse error at end of line" -- TODO: what is the line?
 parseError ((Located (line, column) _):_) = Left $ "parse error at line " ++ show line ++ ", column " ++ show column
 
-data Exp = Plus Exp Exp
-         | Minus Exp Exp
-         | Mult Exp Exp
-         | Int Integer
+data Expr = Plus Expr Expr
+          | Minus Expr Expr
+          | Mult Expr Expr
+          | Int Integer
   deriving (Show)
 
 }

@@ -1,4 +1,4 @@
-module Types ( 
+module Types (
   Line, Column, LocationInfo
 , Located (..)
 , unLocate
@@ -17,7 +17,7 @@ data Located a = Located LocationInfo a
 unLocate :: Located a -> a
 unLocate (Located _ x) = x
 
-data Token 
+data Token
   = TokenInt Int
   | TokenIf | TokenThen | TokenElse
   | TokenSucc | TokenPred | TokenIsZero
@@ -33,7 +33,7 @@ data Term
   | TermSucc Term | TermPred Term
   deriving (Show)
 
-data Type 
-  = TypeNat 
+data Type
+  = TypeNat
   | TypeBool
   deriving (Eq, Show)

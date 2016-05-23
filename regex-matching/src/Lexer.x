@@ -3,7 +3,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Lexer (
-  alexScanTokens
+  scanTokens
 ) where
 
 import Control.Monad (liftM, ap)
@@ -89,15 +89,15 @@ instance Applicative Alex where
   (<*>) = ap
 
 instance Monad Alex where
-  m >>= k = Alex $ 
-    \s -> case unAlex m s of 
+  m >>= k = Alex $
+    \s -> case unAlex m s of
             Left err -> Left err
             Right (s',a) -> unAlex (k a) s'
   return a = Alex $ \s -> Right (s, a)
 
 type AlexAction = String -> Alex Token
 
-data AlexResult = MiddleToken Token | MiddleEOF
+data AlexResult = IntermediateToken Token | IntermediateEOF
 
 alexInputPrevChar :: AlexInput -> Char
 alexInputPrevChar (c, _, _) = c
@@ -129,44 +129,45 @@ alexPopStartCode = Alex $ \s@AlexState{..} -> Right (s { alexScd = tail alexScd 
 runAlex :: AlexState -> Alex a -> Either String (AlexState, a)
 runAlex s (Alex f) = f s
 
-alexMonadScanToken :: Alex AlexResult
-alexMonadScanToken = do
+scanMetaChar :: String -> Alex Token
+scanMetaChar _ = do
+  alexPushStartCode metac
+  t <- monadicScanToken
+  alexPopStartCode
+  case t of
+    IntermediateEOF -> alexError
+    IntermediateToken t -> return t
+
+monadicScanToken :: Alex AlexResult
+monadicScanToken = do
   inp@(_, _, str) <- alexGetInput
   sc <- head <$> alexGetStartCode
   case alexScan inp sc of
-    AlexEOF -> return MiddleEOF
+    AlexEOF -> return IntermediateEOF
     AlexError _ -> alexError
     AlexSkip inp' _ -> do
       alexSetInput inp'
-      alexMonadScanToken
+      monadicScanToken
     AlexToken inp' len action -> do
       alexSetInput inp'
-      MiddleToken <$> action (take len str)
+      IntermediateToken <$> action (take len str)
 
-alexScanTokens :: String -> Either String [Token]
-alexScanTokens inp = go $ AlexState { alexInput = inp
-                                    , alexChar = '\n'
-                                    , alexBytes = []
-                                    , alexScd = [0]
-                                    }
+scanTokens :: String -> Either String [Token]
+scanTokens inp = go $ AlexState { alexInput = inp
+                                , alexChar = '\n'
+                                , alexBytes = []
+                                , alexScd = [0]
+                                }
   where
-    go s = case runAlex s alexMonadScanToken of
+    go s = case runAlex s monadicScanToken of
              Left err -> Left err
              Right (s', x) -> do
                case x of
-                 MiddleEOF -> return []
-                 MiddleToken x -> do
+                 IntermediateEOF -> return []
+                 IntermediateToken x -> do
                    case go s' of
                      Left err -> Left err
                      Right xs -> Right (x:xs)
 
-scanMetaChar :: String -> Alex Token
-scanMetaChar _ = do
-  alexPushStartCode metac
-  t <- alexMonadScanToken
-  alexPopStartCode
-  case t of
-    MiddleEOF -> alexError
-    MiddleToken t -> return t
 
 }

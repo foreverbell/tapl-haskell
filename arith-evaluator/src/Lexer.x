@@ -1,7 +1,7 @@
 {
 
 module Lexer (
-  alexScanTokens
+  scanTokens
 , Token (..)
 , Located (..)
 ) where
@@ -20,7 +20,7 @@ tokens :-
   \(         { \_ _ -> TokenLB }
   \)         { \_ _ -> TokenRB }
   [\+ \- \*] { \_ s -> TokenBinOp (head s) }
-   
+
 {
 
 utf8Encode :: Char -> [Word8]
@@ -63,13 +63,13 @@ alexInputPrevChar (_, c, _, _) = c
 alexGetByte :: AlexInput -> Maybe (Word8, AlexInput)
 alexGetByte (p, c, (b:bs), s) = Just (b, (p, c, bs, s))
 alexGetByte (_, _, [], []) = Nothing
-alexGetByte (p, _, [], (c:s)) = let p' = alexMove p c 
+alexGetByte (p, _, [], (c:s)) = let p' = alexMove p c
                                     (b:bs) = utf8Encode c
                                  in p' `seq` Just (b, (p', c, bs, s))
 
-alexScanTokens :: String -> Either String [Located Token]
-alexScanTokens str = go (alexStartPos, '\n', [], str)
-  where 
+scanTokens :: String -> Either String [Located Token]
+scanTokens str = go (alexStartPos, '\n', [], str)
+  where
     go inp@(pos, _, _, str) = do
       case alexScan inp 0 of
         AlexEOF -> return []

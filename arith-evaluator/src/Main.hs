@@ -1,27 +1,32 @@
 module Main where
 
 import Control.Monad (forever)
+import System.Environment (getArgs)
 import System.IO (stdout, hFlush)
-import Lexer
-import Parser
+import Parser (parseTree, Expr (..))
 
-eval :: Exp -> Integer
+eval :: Expr -> Integer
 eval (Plus e1 e2) = eval e1 + eval e2
 eval (Minus e1 e2) = eval e1 - eval e2
 eval (Mult e1 e2) = eval e1 * eval e2
 eval (Int i) = i
 
-parse :: String -> Either String Integer
-parse l = do
-  ts <- alexScanTokens l
-  exp <- happyParseExp ts
-  return $ eval exp
+run :: String -> IO ()
+run str = case (eval <$> parseTree str) of
+  Left err -> putStrLn err
+  Right v -> print v
+
+usage = putStrLn "usage: arith-evaluator <infile>"
 
 main :: IO ()
-main = forever $ do
-  putStr "arith-evaluator> "
-  hFlush stdout
-  l <- getLine
-  case parse l of
-    Left err -> putStrLn err
-    Right v -> putStrLn $ show v
+main = do
+  args <- getArgs
+  case args of
+    [] -> do
+      usage
+      forever $ do
+        putStr "arith-evaluator> "
+        hFlush stdout
+        run =<< getLine
+    [sourceFile] -> run =<< readFile sourceFile
+    _ -> usage

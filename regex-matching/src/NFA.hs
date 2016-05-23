@@ -87,13 +87,13 @@ accept nfa x = go x (epsClosure [0])
     move1 :: Edge TransitionRule -> Char -> Maybe Int
     move1 (u, t) c = if translate t c then Just u else Nothing
       where
-        translate TransEpsilon = const False -- expecting this transition *comsuming* a character
+        translate TransEpsilon = const False -- expecting this transition *consuming* a character
         translate TransAny = const True
         translate (TransChar ch) = (==) ch
         translate (TransPositive rules) = \ch -> any (($ ch) . translate) rules
         translate (TransNegative rules) = \ch -> not $ any (($ ch) . translate) rules
         translate (TransRange c1 c2) = \ch -> ch >= c1 && ch <= c2
-    
+
     move :: [Int] -> Char -> [Int]
     move xs c = nub' $ concat $ do
       x <- xs
@@ -104,7 +104,7 @@ accept nfa x = go x (epsClosure [0])
     epsClosure xs = Set.toList $ foldr expand Set.empty xs
       where
         expand :: Int -> Set.Set Int -> Set.Set Int
-        expand x s 
+        expand x s
           | Set.member x s = s
           | otherwise = let f (u, TransEpsilon) s = expand u s
                             f _ s = s

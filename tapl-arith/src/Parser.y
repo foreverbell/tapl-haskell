@@ -1,14 +1,15 @@
 {
 
 module Parser (
-  happyParseTerms
+  parseTree
 ) where
 
+import Lexer (scanTokens)
 import Types
 
 }
 
-%name happyParseTerms Term
+%name parse Term
 %tokentype { Located Token }
 %monad { Either String }
 %error { parseError }
@@ -45,6 +46,9 @@ AtomTerm :: { Term }
   | int               { intToTerm $1 }
 
 {
+
+parseTree :: String -> Either String Term
+parseTree str = parse =<< scanTokens str
 
 parseError :: [Located Token] -> Either String a
 parseError [] = Left $ "parse error at end of line"

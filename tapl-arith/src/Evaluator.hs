@@ -1,5 +1,5 @@
 module Evaluator (
-  eval 
+  eval
 ) where
 
 import Types
@@ -69,6 +69,6 @@ evalFull t = case eval1 t of
 eval :: Term -> Either String Term
 eval term = if isVal nf
   then Right nf
-  else Left "eval error: term is malformed"
-  where 
+  else Left "eval error: malformed term"
+  where
     nf = evalFull term

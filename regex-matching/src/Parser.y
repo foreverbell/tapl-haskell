@@ -1,14 +1,15 @@
 {
 
 module Parser (
-  happyParseRE
+  parseTree
 ) where
 
+import Lexer (scanTokens)
 import Types
 
 }
 
-%name happyParseRE RE
+%name parse RE
 %tokentype { Token }
 %monad { Either String }
 %error { parseError }
@@ -75,6 +76,9 @@ SetItem :: { SetItem }
   | char '-' char     { ItemRange $1 $3 }
 
 {
+
+parseTree :: String -> Either String RE
+parseTree str = parse =<< scanTokens str
 
 parseError :: [Token] -> Either String a
 parseError _ = Left "parse error"
