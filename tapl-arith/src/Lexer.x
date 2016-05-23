@@ -20,10 +20,13 @@ $kwchar = [$lower $upper]
 
 tokens :-
   $white+    ;
-  $digit+    { \_ s -> TokenInt (read s) }
-  $kwchar+   { \_ s -> fromMaybe TokenError (lookupKeyword s) }
-  \(         { \_ _ -> TokenLBracket }
-  \)         { \_ _ -> TokenRBracket }
+  $digit+    { \_ s -> return $ TokenInt (read s) }
+  $kwchar+   { \(AlexPn _ line column) s -> do
+                  case lookupKeyword s of
+                    Just token -> return token
+                    Nothing -> alexFail line column }
+  \(         { \_ _ -> return TokenLBracket }
+  \)         { \_ _ -> return TokenRBracket }
 
 {
 
@@ -71,22 +74,21 @@ alexGetByte (p, _, [], (c:s)) = let p' = alexMove p c
                                     (b:bs) = utf8Encode c
                                  in p' `seq` Just (b, (p', c, bs, s))
 
+alexFail :: Int -> Int -> Either String a
+alexFail _ column = Left $ "lexical error at column " ++ show column
+
 scanTokens :: String -> Either String [Located Token]
 scanTokens str = go (alexStartPos, '\n', [], str)
   where
     go inp@(pos, _, _, str) = do
       case alexScan inp 0 of
         AlexEOF -> return []
-        AlexError ((AlexPn _ line column), _, _, _) -> fail line column
+        AlexError ((AlexPn _ line column), _, _, _) -> alexFail line column
         AlexSkip  inp' len -> go inp'
         AlexToken inp'@((AlexPn _ line column), _, _, _) len action -> do
-          let cur = action pos (take len str)
-          case cur of
-            TokenError -> fail line column
-            otherwise -> do
-              rest <- go inp'
-              return (Located (line, column) cur:rest)
-    fail _ column = Left $ "lexical error at column " ++ show column
+          cur <- action pos (take len str)
+          rest <- go inp'
+          return (Located (line, column) cur:rest)
 
 lookupKeyword :: String -> Maybe Token
 lookupKeyword kw = lookup kw keywords

@@ -22,7 +22,6 @@ data Token
   | TokenSucc | TokenPred | TokenIsZero
   | TokenTrue | TokenFalse
   | TokenLBracket | TokenRBracket
-  | TokenError
   deriving (Show)
 
 data Term
