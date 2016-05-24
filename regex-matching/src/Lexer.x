@@ -92,7 +92,7 @@ instance Monad Alex where
   m >>= k = Alex $
     \s -> case unAlex m s of
             Left err -> Left err
-            Right (s',a) -> unAlex (k a) s'
+            Right (s', a) -> unAlex (k a) s'
   return a = Alex $ \s -> Right (s, a)
 
 type AlexAction = String -> Alex Token
