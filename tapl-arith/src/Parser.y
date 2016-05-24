@@ -10,22 +10,22 @@ import Types
 }
 
 %name parse Term
-%tokentype { Located Token }
+%tokentype { Token }
 %monad { Either String }
 %error { parseError }
 
 %token
-  '('      { Located _ TokenLBracket }
-  ')'      { Located _ TokenRBracket }
-  int      { Located _ (TokenInt $$) }
-  'if'     { Located _ TokenIf }
-  'then'   { Located _ TokenThen }
-  'else'   { Located _ TokenElse }
-  'succ'   { Located _ TokenSucc }
-  'pred'   { Located _ TokenPred }
-  'iszero' { Located _ TokenIsZero }
-  'true'   { Located _ TokenTrue }
-  'false'  { Located _ TokenFalse }
+  '('      { TokenLBracket }
+  ')'      { TokenRBracket }
+  int      { TokenInt $$ }
+  'if'     { TokenIf }
+  'then'   { TokenThen }
+  'else'   { TokenElse }
+  'succ'   { TokenSucc }
+  'pred'   { TokenPred }
+  'iszero' { TokenIsZero }
+  'true'   { TokenTrue }
+  'false'  { TokenFalse }
 
 %%
 
@@ -50,9 +50,8 @@ AtomTerm :: { Term }
 parseTree :: String -> Either String Term
 parseTree str = parse =<< scanTokens str
 
-parseError :: [Located Token] -> Either String a
-parseError [] = Left $ "parse error at end of line"
-parseError ((Located (_, column) _):_) = Left $ "parse error at column " ++ show column
+parseError :: [Token] -> Either String a
+parseError _ = Left "parse error"
 
 intToTerm :: Int -> Term
 intToTerm 0 = TermZero

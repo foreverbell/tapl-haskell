@@ -169,5 +169,4 @@ scanTokens inp = go $ AlexState { alexInput = inp
                      Left err -> Left err
                      Right xs -> Right (x:xs)
 
-
 }
