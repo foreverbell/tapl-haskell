@@ -4,16 +4,16 @@ module Evaluator (
 
 import Types
 
-isNumericVal :: Term -> Bool
-isNumericVal TermZero = True
-isNumericVal (TermPred t) = isNumericVal t
-isNumericVal (TermSucc t) = isNumericVal t
-isNumericVal _ = False
+isNumericValue :: Term -> Bool
+isNumericValue TermZero = True
+isNumericValue (TermPred t) = isNumericValue t
+isNumericValue (TermSucc t) = isNumericValue t
+isNumericValue _ = False
 
-isVal :: Term -> Bool
-isVal TermTrue = True
-isVal TermFalse = True
-isVal t = isNumericVal t
+isValue :: Term -> Bool
+isValue TermTrue = True
+isValue TermFalse = True
+isValue t = isNumericValue t
 
 -- | One step evaluation, return Nothing if there is no rule applies.
 eval1 :: Term -> Maybe Term
@@ -39,7 +39,7 @@ eval1 (TermPred TermZero) = Just TermZero
 
 {- E-PredSucc -}
 eval1 (TermPred (TermSucc nv))
-  | isNumericVal nv = Just nv
+  | isNumericValue nv = Just nv
 
 {- E-Pred -}
 eval1 (TermPred t) = do
@@ -51,7 +51,7 @@ eval1 (TermIsZero TermZero) = Just TermTrue
 
 {- E-IsZeroSucc -}
 eval1 (TermIsZero (TermSucc nv))
-  | isNumericVal nv = Just TermFalse
+  | isNumericValue nv = Just TermFalse
 
 {- E-IsZero -}
 eval1 (TermIsZero t) = do
@@ -67,8 +67,7 @@ evalFull t = case eval1 t of
   Nothing -> t
 
 eval :: Term -> Either String Term
-eval term = if isVal nf
+eval t = if isValue nf
   then Right nf
-  else Left "eval error: malformed term"
-  where
-    nf = evalFull term
+  else Left "evaluate error"
+  where nf = evalFull t
