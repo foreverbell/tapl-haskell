@@ -13,11 +13,14 @@ executable main
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
                      , array
+                     , unordered-containers
   build-tools:         alex, happy
-  ghc-options:         -O2 -Wall
+  ghc-options:         -O2 -W -fwarn-tabs
   other-modules:
     Context
     DeBruijn
+    Evaluator
     Lexer
     Parser
+    PPrint
     Types

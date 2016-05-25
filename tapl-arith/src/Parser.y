@@ -34,16 +34,16 @@ Term :: { Term }
   | 'if' Term 'then' Term 'else' Term { TermIfThenElse $2 $4 $6 }
 
 AppTerm :: { Term }
-  : AtomTerm          { $1 }
-  | 'succ' AtomTerm   { TermSucc $2 }
-  | 'pred' AtomTerm   { TermPred $2 }
-  | 'iszero' AtomTerm { TermIsZero $2 }
+  : AtomicTerm          { $1 }
+  | 'succ' AtomicTerm   { TermSucc $2 }
+  | 'pred' AtomicTerm   { TermPred $2 }
+  | 'iszero' AtomicTerm { TermIsZero $2 }
 
-AtomTerm :: { Term }
-  : '(' Term ')'      { $2 }
-  | 'true'            { TermTrue }
-  | 'false'           { TermFalse }
-  | int               { intToTerm $1 }
+AtomicTerm :: { Term }
+  : '(' Term ')' { $2 }
+  | 'true'       { TermTrue }
+  | 'false'      { TermFalse }
+  | int          { intToTerm $1 }
 
 {
 

@@ -1,16 +1,17 @@
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module Types (
   Context (..)
 , Token (..)
-, Term (..)
-, Raw, DeBruijn
+, PolyTerm (..)
+, Parsed, DeBruijn
 ) where
 
 newtype Context = Context [String]
+  deriving (Show)
 
 data Token
   = TokenLambda
@@ -19,16 +20,17 @@ data Token
   | TokenLBracket | TokenRBracket
   deriving (Show)
 
-data Raw
+data Parsed
 data DeBruijn
 
 type family TermVarType t where
-  TermVarType Raw = String
+  TermVarType Parsed = String
   TermVarType DeBruijn = Int
 
-data Term a
+data PolyTerm a
   = TermVar (TermVarType a)
-  | TermAbs String (Term a)
-  | TermApp (Term a) (Term a)
+  | TermAbs String (PolyTerm a)
+  | TermApp (PolyTerm a) (PolyTerm a)
 
-deriving instance (Show (TermVarType a)) => Show (Term a) 
+deriving instance Show (TermVarType a) => Show (PolyTerm a) 
+deriving instance Eq (TermVarType a) => Eq (PolyTerm a) 

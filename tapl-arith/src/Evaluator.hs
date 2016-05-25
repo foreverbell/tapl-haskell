@@ -69,5 +69,5 @@ evalFull t = case eval1 t of
 eval :: Term -> Either String Term
 eval t = if isValue nf
   then Right nf
-  else Left "evaluate error"
+  else Left "evaluation error"
   where nf = evalFull t
