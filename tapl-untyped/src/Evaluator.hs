@@ -17,7 +17,7 @@ eval1 :: Term -> Maybe Term
 
 {- E-AppAbs -}
 eval1 (TermApp (TermAbs _ t) v)
-  | isValue v = Just $ shift (substitue t v) (-1)
+  | isValue v = Just $ shift (substitue t (shift v 1)) (-1)
 
 {- E-App2 -}
 eval1 (TermApp v t)
