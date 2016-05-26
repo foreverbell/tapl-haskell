@@ -1,1 +1,1 @@
-(lambda x. x) ((lambda x. x) (lambda z. (lambda x. x) z))
+(lambda x. x) ((lambda x. x) (lambda x. (lambda x. x) x))

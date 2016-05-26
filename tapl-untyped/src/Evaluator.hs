@@ -2,7 +2,7 @@ module Evaluator (
   eval
 ) where
 
-import DeBruijn (shift, substitue)
+import DeBruijn (shift, substitute)
 import Types
 
 type Term = PolyTerm DeBruijn
@@ -17,7 +17,7 @@ eval1 :: Term -> Maybe Term
 
 {- E-AppAbs -}
 eval1 (TermApp (TermAbs _ t) v)
-  | isValue v = Just $ shift (substitue t (shift v 1)) (-1)
+  | isValue v = Just $ shift (substitute t (shift v 1)) (-1)
 
 {- E-App2 -}
 eval1 (TermApp v t)
@@ -36,7 +36,7 @@ eval1 _ = Nothing
 evalFull :: Term -> Either String Term
 evalFull t = case eval1 t of
   Just t' -> if t' == t
-               then Left "evaluation diverge"
+               then Left "evaluation diverges"
                else evalFull t'
   Nothing -> Right t
 

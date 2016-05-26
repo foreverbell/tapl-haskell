@@ -1,7 +1,7 @@
 module DeBruijn (
   deBruijn
 , shift
-, substitue
+, substitute
 ) where
 
 import qualified Context as C
@@ -27,9 +27,9 @@ shift term delta = go 0 term
     go cutoff (TermAbs var term) = TermAbs var (go (cutoff + 1) term)
     go cutoff (TermApp term1 term2) = TermApp (go cutoff term1) (go cutoff term2)
 
--- | substitue variable with deBruijn index 0 in term to subterm
-substitue :: Term -> Term -> Term
-substitue term subterm = go 0 subterm term
+-- | substitute variable with deBruijn index 0 in term to subterm
+substitute :: Term -> Term -> Term
+substitute term subterm = go 0 subterm term
   where
     go :: Int -> Term -> Term -> Term
     go index subterm (TermVar var)
