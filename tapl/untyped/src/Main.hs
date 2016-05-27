@@ -1,8 +1,9 @@
 module Main where
 
 import Control.Monad (forever)
-import System.Environment (getArgs)
+import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
+import Text.Printf (printf)
 
 import DeBruijn (deBruijn)
 import Evaluator (eval)
@@ -20,7 +21,8 @@ run str = do
     Left err -> putStrLn err
     Right val -> putStrLn $ pprint val
 
-usage = putStrLn "usage: tapl-untyped <infile>"
+usage :: IO ()
+usage = printf "usage: %s <infile>\n" =<< getProgName
 
 main :: IO ()
 main = do
@@ -29,7 +31,7 @@ main = do
     [] -> do
       usage
       forever $ do
-        putStr "tapl-untyped> "
+        putStr "untyped> "
         hFlush stdout
         run =<< getLine
     [sourceFile] -> run =<< readFile sourceFile

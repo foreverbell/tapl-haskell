@@ -1,8 +1,9 @@
 module Main where
 
 import Control.Monad (forever)
-import System.Environment (getArgs)
+import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
+import Text.Printf (printf)
 
 import Parser (parseTree)
 import Evaluator (eval)
@@ -15,7 +16,7 @@ pprint (tm, ty) = x ++ " : " ++ y
     x = case tm of
           TermTrue -> "true"
           TermFalse -> "false"
-          otherwise -> show $ go tm
+          _ -> show $ go tm
       where
         go :: Term -> Int
         go TermZero = 0
@@ -36,7 +37,8 @@ run str = do
     Left err -> putStrLn err
     Right val -> putStrLn $ pprint val
 
-usage = putStrLn "usage: tapl-tyarith <infile>"
+usage :: IO ()
+usage = printf "usage: %s <infile>\n" =<< getProgName
 
 main :: IO ()
 main = do
@@ -45,7 +47,7 @@ main = do
     [] -> do
       usage
       forever $ do
-        putStr "tapl-tyarith> "
+        putStr "tyarith> "
         hFlush stdout
         run =<< getLine
     [sourceFile] -> run =<< readFile sourceFile

@@ -1,12 +1,12 @@
 module Main where
 
 import Control.Monad (forever)
-import System.Environment (getArgs)
+import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
+import Text.Printf (printf)
 
 import Parser (parseTree)
 import NFA (build, accept)
-import Types
 
 run :: String -> String -> IO ()
 run regex text = do
@@ -17,7 +17,8 @@ run regex text = do
     Left err -> putStrLn err
     Right val -> print val
 
-usage = putStrLn "usage: regex-matching <infile>"
+usage :: IO ()
+usage = printf "usage: %s <infile>\n" =<< getProgName
 
 prompt :: String -> IO String
 prompt p = do

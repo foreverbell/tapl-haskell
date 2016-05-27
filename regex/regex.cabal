@@ -1,4 +1,4 @@
-name:                tapl-arith
+name:                regex
 version:             0.1.0.0
 author:              foreverbell
 maintainer:          dql.foreverbell@gmail.com
@@ -13,10 +13,12 @@ executable main
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
                      , array
+                     , containers
+                     , unordered-containers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:
-    Evaluator
     Lexer
     Parser
+    NFA
     Types

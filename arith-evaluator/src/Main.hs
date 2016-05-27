@@ -1,8 +1,10 @@
 module Main where
 
 import Control.Monad (forever)
-import System.Environment (getArgs)
+import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
+import Text.Printf (printf)
+
 import Parser (parseTree, Expr (..))
 
 eval :: Expr -> Integer
@@ -16,7 +18,8 @@ run str = case (eval <$> parseTree str) of
   Left err -> putStrLn err
   Right v -> print v
 
-usage = putStrLn "usage: arith-evaluator <infile>"
+usage :: IO ()
+usage = printf "usage: %s <infile>\n" =<< getProgName
 
 main :: IO ()
 main = do
