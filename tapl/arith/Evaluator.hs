@@ -61,13 +61,13 @@ eval1 (TermIsZero t) = do
 {- E-NoRule -}
 eval1 _ = Nothing
 
-evalFull :: Term -> Term
-evalFull t = case eval1 t of
-  Just t' -> evalFull t'
+evalToValue :: Term -> Term
+evalToValue t = case eval1 t of
+  Just t' -> evalToValue t'
   Nothing -> t
 
 eval :: Term -> Either String Term
 eval t = if isValue nf
   then Right nf
   else Left "evaluation error"
-  where nf = evalFull t
+  where nf = evalToValue t

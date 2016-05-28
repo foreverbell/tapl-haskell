@@ -61,7 +61,7 @@ kleenePlus nfa = NFA $ foldr addEdge (mconcat [ emptyNode, shift 1 g, emptyNode 
                , (n, (1, TransEpsilon))
                ]
 
--- | Thompson's construction, see https://en.wikipedia.org/wiki/Thompson%27s_construction
+-- | Thompson's construction, see https://en.wikipedia.org/wiki/Thompson%27s_construction.
 build :: RE -> NFA
 build REAnyChar = symbol TransAny
 build (REChar c) = symbol (TransChar c)
@@ -87,7 +87,7 @@ accept nfa x = go x (epsClosure [0])
     move1 :: Edge TransitionRule -> Char -> Maybe Int
     move1 (u, t) c = if translate t c then Just u else Nothing
       where
-        translate TransEpsilon = const False -- expecting this transition *consuming* a character
+        translate TransEpsilon = const False -- expecting this transition *consuming* a character.
         translate TransAny = const True
         translate (TransChar ch) = (==) ch
         translate (TransPositive rules) = \ch -> any (($ ch) . translate) rules

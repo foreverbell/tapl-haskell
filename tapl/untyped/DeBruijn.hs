@@ -27,7 +27,7 @@ shift term delta = go 0 term
     go cutoff (TermAbs var term) = TermAbs var (go (cutoff + 1) term)
     go cutoff (TermApp term1 term2) = TermApp (go cutoff term1) (go cutoff term2)
 
--- | substitute variable with deBruijn index 0 in term to subterm
+-- | substitute variable with deBruijn index 0 in term to subterm.
 substitute :: Term -> Term -> Term
 substitute term subterm = go 0 subterm term
   where
@@ -35,5 +35,5 @@ substitute term subterm = go 0 subterm term
     go index subterm (TermVar var)
       | var == index = subterm
       | otherwise = TermVar var
-    go index subterm (TermAbs var term) = TermAbs var (go (index+1) (shift subterm 1) term)
+    go index subterm (TermAbs var term) = TermAbs var (go (index + 1) (shift subterm 1) term)
     go index subterm (TermApp term1 term2) = TermApp (go index subterm term1) (go index subterm term2)

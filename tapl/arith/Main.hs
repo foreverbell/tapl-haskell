@@ -5,19 +5,9 @@ import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
 import Text.Printf (printf)
 
-import Parser (parseTree)
 import Evaluator (eval)
-import Types
-
-pprint :: Term -> String
-pprint TermTrue = "true"
-pprint TermFalse = "false"
-pprint t = show $ go t
-  where
-    go :: Term -> Int
-    go TermZero = 0
-    go (TermSucc nv) = succ $ go nv
-    go _ = undefined
+import Parser (parseTree)
+import PPrint (pprint)
 
 run :: String -> IO ()
 run str = do

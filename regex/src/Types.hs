@@ -43,9 +43,9 @@ data TransitionRule
   | TransRange Char Char
   deriving (Show)
 
-{- Nondeterministic finite automaton, node is indexed from 0,
- - for concatenating NFA conveniently, starting node is set to 0,
- - and termination node is set to (n-1).
+{- Non-deterministic Finite Automaton.
+ - Node is indexed from 0, for concatenating NFA conveniently, 
+ - source node is set to 0, termination node is set to (n - 1).
 -}
 
 type Edge a = (Int, a)

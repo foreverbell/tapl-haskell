@@ -17,7 +17,7 @@ empty = Context []
 nameToIndex :: Context -> String -> Either String Int
 nameToIndex (Context ctx) name = case findIndex (== name) ctx of
   Just index -> Right index
-  Nothing -> Left $ "variable " ++ name ++ " is unbound"
+  Nothing -> Left $ "context error: variable " ++ name ++ " is unbound"
 
 indexToName :: Context -> Int -> String
 indexToName (Context ctx) index = ctx !! index

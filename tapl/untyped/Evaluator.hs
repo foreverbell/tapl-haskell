@@ -7,8 +7,8 @@ import Types
 
 type Term = PolyTerm DeBruijn
 
--- | call-by-value evalutation strategy, treat abstraction term as value
--- | a redex is reducible only if its right-hand is evaluated to value
+-- | Call-by-value evalutation strategy, treat abstraction term as value.
+-- | A redex is reducible only if its right-hand is evaluated to value.
 isValue :: Term -> Bool
 isValue (TermAbs _ _) = True
 isValue _ = False
@@ -36,7 +36,7 @@ eval1 _ = Nothing
 evalFull :: Term -> Either String Term
 evalFull t = case eval1 t of
   Just t' -> if t' == t
-               then Left "evaluation diverges"
+               then Left "evaluation error: diverges"
                else evalFull t'
   Nothing -> Right t
 
