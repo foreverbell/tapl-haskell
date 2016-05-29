@@ -10,30 +10,30 @@ import Types
 type Term = PolyTerm DeBruijn
 
 deBruijn :: PolyTerm Parsed -> Term
-deBruijn term = go makeEmpty term
+deBruijn t = go makeEmpty t
   where
     go :: Context -> PolyTerm Parsed -> Term
     go ctx (TermVar var) = TermVar (nameToIndex ctx var)
-    go ctx (TermAbs var term) = TermAbs var (go (addName ctx var) term)
-    go ctx (TermApp term1 term2) = TermApp (go ctx term1) (go ctx term2)
+    go ctx (TermAbs var t) = TermAbs var (go (addName ctx var) t)
+    go ctx (TermApp t1 t2) = TermApp (go ctx t1) (go ctx t2)
 
 shift :: Term -> Int -> Term
-shift term delta = go 0 term
+shift t delta = go 0 t
   where
     go :: Int -> Term -> Term
     go cutoff (TermVar var)
       | var >= cutoff = TermVar (var + delta)
       | otherwise = TermVar var
-    go cutoff (TermAbs var term) = TermAbs var (go (cutoff + 1) term)
-    go cutoff (TermApp term1 term2) = TermApp (go cutoff term1) (go cutoff term2)
+    go cutoff (TermAbs var t) = TermAbs var (go (cutoff + 1) t)
+    go cutoff (TermApp t1 t2) = TermApp (go cutoff t1) (go cutoff t2)
 
 -- | substitute variable with deBruijn index 0 in term to subterm.
 substitute :: Term -> Term -> Term
-substitute term subterm = go 0 subterm term
+substitute t subt = go 0 subt t
   where
     go :: Int -> Term -> Term -> Term
-    go index subterm (TermVar var)
-      | var == index = subterm
+    go index subt (TermVar var)
+      | var == index = subt
       | otherwise = TermVar var
-    go index subterm (TermAbs var term) = TermAbs var (go (index + 1) (shift subterm 1) term)
-    go index subterm (TermApp term1 term2) = TermApp (go index subterm term1) (go index subterm term2)
+    go index subt (TermAbs var t) = TermAbs var (go (index + 1) (shift subt 1) t)
+    go index subt (TermApp t1 t2) = TermApp (go index subt t1) (go index subt t2)

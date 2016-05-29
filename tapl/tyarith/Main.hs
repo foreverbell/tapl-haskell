@@ -13,9 +13,9 @@ import TypeChecker (typeCheck)
 run :: String -> IO ()
 run str = do
   let term = parseTree str
-  let ty = typeCheck term
+  let ttype = typeCheck term
   let val = evaluate term
-  putStrLn $ pprint (val, ty)
+  putStrLn $ pprint (val, ttype)
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName

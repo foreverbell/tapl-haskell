@@ -19,14 +19,14 @@ nameToIndex (Context ctx) name = case findIndex (\(var, _) -> var == name) ctx o
   Just index -> index
   Nothing -> error $ "context error: variable " ++ name ++ " is unbound"
 
-indexToName :: Context -> Int -> String
-indexToName (Context ctx) index = fst (ctx !! index)
+indexToName :: Context -> Int -> (String, TermType)
+indexToName (Context ctx) index = ctx !! index
 
 addName :: Context -> String -> TermType -> Context
-addName (Context ctx) name ttype = Context ((name, ttype) : ctx)
+addName (Context ctx) name ty = Context ((name, ty) : ctx)
 
 pickFreshName :: Context -> String -> TermType -> (Context, String)
-pickFreshName (Context ctx) name ttype = (addName (Context ctx) freshName ttype, freshName)
+pickFreshName (Context ctx) name ty = (addName (Context ctx) freshName ty, freshName)
   where
     ctx' = S.fromList $ map fst ctx
     freshName = if name `S.member` ctx' 

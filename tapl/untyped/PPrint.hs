@@ -13,15 +13,15 @@ pprint :: Term -> String
 pprint = pprintTerm makeEmpty
 
 pprintTerm :: Context -> Term -> String
-pprintTerm ctx (TermAbs var term) = printf "lambda %s. %s" fresh (pprintTerm ctx' term)
+pprintTerm ctx (TermAbs var t) = printf "lambda %s. %s" fresh (pprintTerm ctx' t)
   where
     (ctx', fresh) = pickFreshName ctx var
-pprintTerm ctx term = pprintAppTerm ctx term
+pprintTerm ctx t = pprintAppTerm ctx t
 
 pprintAppTerm :: Context -> Term -> String
-pprintAppTerm ctx (TermApp term1 term2) = printf "%s %s" (pprintAppTerm ctx term1) (pprintAtomicTerm ctx term2)
-pprintAppTerm ctx term = pprintAtomicTerm ctx term
+pprintAppTerm ctx (TermApp t1 t2) = printf "%s %s" (pprintAppTerm ctx t1) (pprintAtomicTerm ctx t2)
+pprintAppTerm ctx t = pprintAtomicTerm ctx t
 
 pprintAtomicTerm :: Context -> Term -> String
 pprintAtomicTerm ctx (TermVar index) = indexToName ctx index
-pprintAtomicTerm ctx term = printf "(%s)" (pprintTerm ctx term)
+pprintAtomicTerm ctx t = printf "(%s)" (pprintTerm ctx t)

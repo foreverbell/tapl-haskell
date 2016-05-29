@@ -5,12 +5,12 @@ module PPrint (
 import Types
 
 pprint :: (Term, TermType) -> String
-pprint (tm, ty) = x ++ " : " ++ y
+pprint (t, ty) = x ++ " : " ++ y
   where
-    x = case tm of
+    x = case t of
           TermTrue -> "true"
           TermFalse -> "false"
-          _ -> show $ go tm
+          _ -> show $ go t
       where
         go :: Term -> Int
         go TermZero = 0

@@ -7,12 +7,14 @@ import Text.Printf (printf)
 
 import DeBruijn (deBruijn)
 import Parser (parseTree)
+import TypeChecker (typeCheck)
 
 run :: String -> IO ()
 run str = do
   let parsed = parseTree str
   let term = deBruijn parsed
-  putStrLn $ show term
+  let ttype = typeCheck term
+  putStrLn $ show term ++ " : " ++ show ttype
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName
