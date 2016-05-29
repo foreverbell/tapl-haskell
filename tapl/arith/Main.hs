@@ -5,18 +5,15 @@ import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
 import Text.Printf (printf)
 
-import Evaluator (eval)
+import Evaluator (evaluate)
 import Parser (parseTree)
 import PPrint (pprint)
 
 run :: String -> IO ()
 run str = do
-  let val = do
-        term <- parseTree str
-        eval term
-  case val of
-    Left err -> putStrLn err
-    Right val -> putStrLn $ pprint val
+  let term = parseTree str
+  let val = evaluate term
+  putStrLn $ pprint val
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName

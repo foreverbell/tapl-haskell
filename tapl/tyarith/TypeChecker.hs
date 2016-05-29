@@ -4,45 +4,38 @@ module TypeChecker (
 
 import Types
 
-typeCheck :: Term -> Either String Type
+typeCheck :: Term -> Type
 
 {- T-True -}
-typeCheck TermTrue = Right TypeBool
+typeCheck TermTrue = TypeBool
 
 {- T-False -}
-typeCheck TermFalse = Right TypeBool
+typeCheck TermFalse = TypeBool
 
 {- T-If -}
-typeCheck (TermIfThenElse t t1 t2) = do
-  ty <- typeCheck t
-  ty1 <- typeCheck t1
-  ty2 <- typeCheck t2
-  case ty of
-    TypeBool -> if ty1 == ty2
-                   then Right ty1
-                   else Left "type error: arms of conditional have different types"
-    _ -> Left "type error: guard of conditional not a boolean"
+typeCheck (TermIfThenElse t t1 t2) = case typeCheck t of
+  TypeBool -> if ty1 == ty2 
+                then ty1
+                else error "type error: arms of conditional have different types"
+  _ -> error "type error: guard of conditional not a boolean"
+  where
+    ty1 = typeCheck t1
+    ty2 = typeCheck t2
 
 {- T-Zero -}
-typeCheck TermZero = Right TypeNat
+typeCheck TermZero = TypeNat
 
 {- T-Succ -}
-typeCheck (TermSucc t) = do
-  ty <- typeCheck t
-  case ty of
-    TypeNat -> Right TypeNat
-    _ -> Left "type error: argument of succ is not a number"
+typeCheck (TermSucc t) = case typeCheck t of
+  TypeNat -> TypeNat
+  _ -> error "type error: argument of succ is not a number"
 
 {- T-Pred -}
-typeCheck (TermPred t) = do
-  ty <- typeCheck t
-  case ty of
-    TypeNat -> Right TypeNat
-    _ -> Left "type error: argument of pred is not a number"
+typeCheck (TermPred t) = case typeCheck t of
+  TypeNat -> TypeNat
+  _ -> error "type error: argument of pred is not a number"
 
 {- T-IsZero -}
-typeCheck (TermIsZero t) = do
-  ty <- typeCheck t
-  case ty of
-    TypeNat -> Right TypeBool
-    _ -> Left "type error: argument of iszero is not a number"
+typeCheck (TermIsZero t) = case typeCheck t of
+  TypeNat -> TypeBool
+  _ -> error "type error: argument of iszero is not a number"

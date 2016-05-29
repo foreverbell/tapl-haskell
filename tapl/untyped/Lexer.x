@@ -55,20 +55,16 @@ alexGetByte (_, [], []) = Nothing
 alexGetByte (_, [], (c:s)) = let (b:bs) = utf8Encode c
                               in Just (b, (c, bs, s))
 
-alexFail :: Either String a
-alexFail = Left "lexical error"
+alexFail :: a
+alexFail = error "lexical error"
 
-scanTokens :: String -> Either String [Token]
+scanTokens :: String -> [Token]
 scanTokens str = go ('\n', [], str)
   where
-    go inp@(_, _, input) = do
-      case alexScan inp 0 of
-        AlexEOF -> return []
-        AlexError _ -> alexFail
-        AlexSkip inp' _ -> go inp'
-        AlexToken inp' length action -> do
-          let cur = action (take length input)
-          rest <- go inp'
-          return (cur:rest)
+    go inp@(_, _, input) = case alexScan inp 0 of
+      AlexEOF -> []
+      AlexError _ -> alexFail
+      AlexSkip inp' _ -> go inp'
+      AlexToken inp' length action -> action (take length input) : go inp'
 
 }

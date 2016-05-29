@@ -9,13 +9,13 @@ import           Types
 
 type Term = PolyTerm DeBruijn
 
-deBruijn :: PolyTerm Parsed -> Either String Term
+deBruijn :: PolyTerm Parsed -> Term
 deBruijn term = go C.empty term
   where
-    go :: Context -> PolyTerm Parsed -> Either String Term
-    go ctx (TermVar var) = TermVar <$> C.nameToIndex ctx var
-    go ctx (TermAbs var term) = TermAbs var <$> go (C.addName ctx var) term
-    go ctx (TermApp term1 term2) = TermApp <$> go ctx term1 <*> go ctx term2
+    go :: Context -> PolyTerm Parsed -> Term
+    go ctx (TermVar var) = TermVar (C.nameToIndex ctx var)
+    go ctx (TermAbs var term) = TermAbs var (go (C.addName ctx var) term)
+    go ctx (TermApp term1 term2) = TermApp (go ctx term1) (go ctx term2)
 
 shift :: Term -> Int -> Term
 shift term delta = go 0 term

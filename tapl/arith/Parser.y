@@ -11,7 +11,6 @@ import Types
 
 %name parse Term
 %tokentype { Token }
-%monad { Either String }
 %error { parseError }
 
 %token
@@ -34,24 +33,24 @@ Term :: { Term }
   | 'if' Term 'then' Term 'else' Term { TermIfThenElse $2 $4 $6 }
 
 AppTerm :: { Term }
-  : AtomicTerm          { $1 }
-  | 'succ' AtomicTerm   { TermSucc $2 }
-  | 'pred' AtomicTerm   { TermPred $2 }
-  | 'iszero' AtomicTerm { TermIsZero $2 }
+  : AtomicTerm                        { $1 }
+  | 'succ' AtomicTerm                 { TermSucc $2 }
+  | 'pred' AtomicTerm                 { TermPred $2 }
+  | 'iszero' AtomicTerm               { TermIsZero $2 }
 
 AtomicTerm :: { Term }
-  : '(' Term ')' { $2 }
-  | 'true'       { TermTrue }
-  | 'false'      { TermFalse }
-  | int          { intToTerm $1 }
+  : '(' Term ')'                      { $2 }
+  | 'true'                            { TermTrue }
+  | 'false'                           { TermFalse }
+  | int                               { intToTerm $1 }
 
 {
 
-parseTree :: String -> Either String Term
-parseTree str = parse =<< scanTokens str
+parseTree :: String -> Term
+parseTree = parse . scanTokens
 
-parseError :: [Token] -> Either String a
-parseError _ = Left "parse error"
+parseError :: [Token] -> a
+parseError _ = error "parse error"
 
 intToTerm :: Int -> Term
 intToTerm 0 = TermZero

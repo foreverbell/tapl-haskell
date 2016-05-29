@@ -19,12 +19,12 @@ $kwchar = [a-zA-Z]
 
 tokens :-
   $white+    ;
-  $digit+    { \s -> return $ TokenInt (read s) }
+  $digit+    { \s -> TokenInt (read s) }
   $kwchar+   { \s -> case lookupKeyword s of
-                       Just token -> return token
+                       Just token -> token
                        Nothing -> alexFail }
-  \(         { \_ -> return TokenLBracket }
-  \)         { \_ -> return TokenRBracket }
+  \(         { \_ -> TokenLBracket }
+  \)         { \_ -> TokenRBracket }
 
 {
 
@@ -61,21 +61,17 @@ alexGetByte (_, [], []) = Nothing
 alexGetByte (_, [], (c:s)) = let (b:bs) = utf8Encode c
                               in Just (b, (c, bs, s))
 
-alexFail :: Either String a
-alexFail = Left "lexical error"
+alexFail :: a
+alexFail = error "lexical error"
 
-scanTokens :: String -> Either String [Token]
+scanTokens :: String -> [Token]
 scanTokens str = go ('\n', [], str)
   where
-    go inp@(_, _, input) = do
-      case alexScan inp 0 of
-        AlexEOF -> return []
-        AlexError _ -> alexFail
-        AlexSkip inp' _ -> go inp'
-        AlexToken inp' length action -> do
-          cur <- action (take length input)
-          rest <- go inp'
-          return (cur:rest)
+    go inp@(_, _, input) = case alexScan inp 0 of
+      AlexEOF -> []
+      AlexError _ -> alexFail
+      AlexSkip inp' _ -> go inp'
+      AlexToken inp' length action -> action (take length input) :  go inp'
 
 lookupKeyword :: String -> Maybe Token
 lookupKeyword kw = lookup kw keywords

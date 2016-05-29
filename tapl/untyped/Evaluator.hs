@@ -1,5 +1,5 @@
 module Evaluator (
-  eval
+  evaluate
 ) where
 
 import DeBruijn (shift, substitute)
@@ -13,36 +13,35 @@ isValue :: Term -> Bool
 isValue (TermAbs _ _) = True
 isValue _ = False
 
-eval1 :: Term -> Maybe Term
+evaluate1 :: Term -> Maybe Term
 
 {- E-AppAbs -}
-eval1 (TermApp (TermAbs _ t) v)
+evaluate1 (TermApp (TermAbs _ t) v)
   | isValue v = Just $ shift (substitute t (shift v 1)) (-1)
 
 {- E-App2 -}
-eval1 (TermApp v t)
+evaluate1 (TermApp v t)
   | isValue v = do
-      t' <- eval1 t
+      t' <- evaluate1 t
       return $ TermApp v t'
 
 {- E-App1 -}
-eval1 (TermApp t1 t2) = do
-  t1' <- eval1 t1
+evaluate1 (TermApp t1 t2) = do
+  t1' <- evaluate1 t1
   return $ TermApp t1' t2
 
 {- E-NoRule -}
-eval1 _ = Nothing
+evaluate1 _ = Nothing
 
-evalFull :: Term -> Either String Term
-evalFull t = case eval1 t of
+evaluateToNF :: Term -> Term
+evaluateToNF t = case evaluate1 t of
   Just t' -> if t' == t
-               then Left "evaluation error: diverges"
-               else evalFull t'
-  Nothing -> Right t
+               then error "evaluation error: diverges"
+               else evaluateToNF t'
+  Nothing -> t
 
-eval :: Term -> Either String Term
-eval term = do
-  nf <- evalFull term
-  if isValue nf
-    then return nf
-    else Left "evaluation error"
+evaluate :: Term -> Term
+evaluate term = if isValue nf
+              then nf
+              else error "evaluation error"
+  where nf = evaluateToNF term

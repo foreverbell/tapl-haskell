@@ -14,10 +14,10 @@ import           Types (Context (..))
 empty :: Context
 empty = Context []
 
-nameToIndex :: Context -> String -> Either String Int
+nameToIndex :: Context -> String -> Int
 nameToIndex (Context ctx) name = case findIndex (== name) ctx of
-  Just index -> Right index
-  Nothing -> Left $ "context error: variable " ++ name ++ " is unbound"
+  Just index -> index
+  Nothing -> error $ "context error: variable " ++ name ++ " is unbound"
 
 indexToName :: Context -> Int -> String
 indexToName (Context ctx) index = ctx !! index

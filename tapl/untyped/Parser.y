@@ -11,7 +11,6 @@ import Types
 
 %name parse Term
 %tokentype { Token }
-%monad { Either String }
 %error { parseError }
 
 %token
@@ -39,10 +38,10 @@ AtomicTerm :: { Term }
 
 type Term = PolyTerm Parsed
 
-parseTree :: String -> Either String Term
-parseTree str = parse =<< scanTokens str
+parseTree :: String -> Term
+parseTree = parse . scanTokens
 
-parseError :: [Token] -> Either String a
-parseError _ = Left "parse error"
+parseError :: [Token] -> a
+parseError _ = error "parse error"
 
 }
