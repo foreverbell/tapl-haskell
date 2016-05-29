@@ -4,7 +4,7 @@ module TypeChecker (
 
 import Types
 
-typeCheck :: Term -> Type
+typeCheck :: Term -> TermType
 
 {- T-True -}
 typeCheck TermTrue = TypeBool

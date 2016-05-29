@@ -35,13 +35,9 @@ evaluate1 _ = Nothing
 
 evaluateToNF :: Term -> Term
 evaluateToNF t = case evaluate1 t of
-  Just t' -> if t' == t
-               then error "evaluation error: diverges"
-               else evaluateToNF t'
+  Just t' -> if t' == t then error "evaluation error: diverges" else evaluateToNF t'
   Nothing -> t
 
 evaluate :: Term -> Term
-evaluate term = if isValue nf
-              then nf
-              else error "evaluation error"
+evaluate term = if isValue nf then nf else error "evaluation error"
   where nf = evaluateToNF term

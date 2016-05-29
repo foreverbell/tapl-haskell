@@ -1,5 +1,5 @@
 module Context ( 
-  empty
+  makeEmpty
 , nameToIndex
 , indexToName
 , addName
@@ -11,8 +11,8 @@ import qualified Data.HashSet as S
 
 import           Types (Context (..))
 
-empty :: Context
-empty = Context []
+makeEmpty :: Context
+makeEmpty = Context []
 
 nameToIndex :: Context -> String -> Int
 nameToIndex (Context ctx) name = case findIndex (== name) ctx of
@@ -23,7 +23,7 @@ indexToName :: Context -> Int -> String
 indexToName (Context ctx) index = ctx !! index
 
 addName :: Context -> String -> Context
-addName (Context ctx) name = Context (name:ctx)
+addName (Context ctx) name = Context (name : ctx)
 
 pickFreshName :: Context -> String -> (Context, String)
 pickFreshName (Context ctx) name = (addName (Context ctx) freshName, freshName)
@@ -32,6 +32,5 @@ pickFreshName (Context ctx) name = (addName (Context ctx) freshName, freshName)
     freshName = if name `S.member` ctx' 
                   then go 1
                   else name
-    go index = if fresh `S.member` ctx' then go (index + 1) else fresh
-      where
-        fresh = name ++ "_" ++ show index
+    go index = let fresh = name ++ "_" ++ show index
+                in if fresh `S.member` ctx' then go (index + 1) else fresh

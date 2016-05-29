@@ -4,17 +4,17 @@ module DeBruijn (
 , substitute
 ) where
 
-import qualified Context as C
-import           Types
+import Context
+import Types
 
 type Term = PolyTerm DeBruijn
 
 deBruijn :: PolyTerm Parsed -> Term
-deBruijn term = go C.empty term
+deBruijn term = go makeEmpty term
   where
     go :: Context -> PolyTerm Parsed -> Term
-    go ctx (TermVar var) = TermVar (C.nameToIndex ctx var)
-    go ctx (TermAbs var term) = TermAbs var (go (C.addName ctx var) term)
+    go ctx (TermVar var) = TermVar (nameToIndex ctx var)
+    go ctx (TermAbs var term) = TermAbs var (go (addName ctx var) term)
     go ctx (TermApp term1 term2) = TermApp (go ctx term1) (go ctx term2)
 
 shift :: Term -> Int -> Term

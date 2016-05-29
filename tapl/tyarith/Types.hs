@@ -1,7 +1,7 @@
 module Types (
   Token (..)
 , Term (..)
-, Type (..)
+, TermType (..)
 ) where
 
 data Token
@@ -20,7 +20,7 @@ data Term
   | TermSucc Term | TermPred Term
   deriving (Show)
 
-data Type
+data TermType
   = TypeNat
   | TypeBool
   deriving (Eq, Show)

@@ -4,7 +4,7 @@ module PPrint (
 
 import Types
 
-pprint :: (Term, Type) -> String
+pprint :: (Term, TermType) -> String
 pprint (tm, ty) = x ++ " : " ++ y
   where
     x = case tm of
