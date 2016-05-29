@@ -41,3 +41,12 @@ executable tyarith
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Evaluator Lexer Parser PPrint TypeChecker Types
+
+executable simplebool
+  hs-source-dirs:      simplebool
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers
+  build-tools:         alex, happy
+  ghc-options:         -O2 -W -fwarn-tabs
+  other-modules:       Context DeBruijn Lexer Parser Types
