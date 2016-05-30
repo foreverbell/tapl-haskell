@@ -34,7 +34,7 @@ pprintType :: TermType -> String
 pprintType = pprintArrowType
 
 pprintArrowType :: TermType -> String
-pprintArrowType (TypeArrow ty1 ty2) = printf "%s->%s" (pprintType ty1) (pprintType ty2)
+pprintArrowType (TypeArrow ty1 ty2) = printf "%s->%s" (pprintAtomicType ty1) (pprintArrowType ty2)
 pprintArrowType ty = pprintAtomicType ty
 
 pprintAtomicType :: TermType -> String
