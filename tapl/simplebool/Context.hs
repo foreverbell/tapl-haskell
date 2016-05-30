@@ -29,8 +29,6 @@ pickFreshName :: Context -> String -> TermType -> (Context, String)
 pickFreshName (Context ctx) name ty = (addName (Context ctx) freshName ty, freshName)
   where
     ctx' = S.fromList $ map fst ctx
-    freshName = if name `S.member` ctx' 
-                  then go 1
-                  else name
+    freshName = if name `S.member` ctx' then go 1 else name
     go index = let fresh = name ++ "_" ++ show index
                 in if fresh `S.member` ctx' then go (index + 1) else fresh

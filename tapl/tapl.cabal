@@ -49,4 +49,4 @@ executable simplebool
   build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Context DeBruijn Evaluator Lexer Parser TypeChecker Types
+  other-modules:       Context DeBruijn Evaluator Lexer Parser PPrint TypeChecker Types

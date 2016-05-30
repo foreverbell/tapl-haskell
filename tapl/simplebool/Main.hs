@@ -6,15 +6,18 @@ import System.IO (stdout, hFlush)
 import Text.Printf (printf)
 
 import DeBruijn (deBruijn)
+import Evaluator (evaluate)
 import Parser (parseTree)
+import PPrint (pprint, pprintType)
 import TypeChecker (typeCheck)
 
 run :: String -> IO ()
 run str = do
   let parsed = parseTree str
-  let term = deBruijn parsed
-  let ttype = typeCheck term
-  putStrLn $ show term ++ " : " ++ show ttype
+  let term = parsed `seq` deBruijn parsed
+  let ttype = term `seq` typeCheck term
+  let val = ttype `seq` evaluate term
+  putStrLn $ pprint val ++ " : " ++ pprintType ttype
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName
