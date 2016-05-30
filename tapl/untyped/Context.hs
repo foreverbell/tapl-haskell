@@ -29,8 +29,6 @@ pickFreshName :: Context -> String -> (Context, String)
 pickFreshName (Context ctx) name = (addName (Context ctx) freshName, freshName)
   where
     ctx' = S.fromList ctx
-    freshName = if name `S.member` ctx' 
-                  then go 1
-                  else name
+    freshName = if name `S.member` ctx' then go 1 else name
     go index = let fresh = name ++ "_" ++ show index
                 in if fresh `S.member` ctx' then go (index + 1) else fresh
