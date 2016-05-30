@@ -13,8 +13,8 @@ import PPrint (pprint)
 run :: String -> IO ()
 run str = do
   let parsed = parseTree str
-  let term = deBruijn parsed
-  let val = evaluate term
+  let term = parsed `seq` deBruijn parsed
+  let val = term `seq` evaluate term
   putStrLn $ pprint val
 
 usage :: IO ()

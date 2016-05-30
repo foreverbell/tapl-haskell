@@ -13,8 +13,8 @@ import TypeChecker (typeCheck)
 run :: String -> IO ()
 run str = do
   let term = parseTree str
-  let ttype = typeCheck term
-  let val = evaluate term
+  let ttype = term `seq` typeCheck term
+  let val = ttype `seq` evaluate term
   putStrLn $ pprint (val, ttype)
 
 usage :: IO ()

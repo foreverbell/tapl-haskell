@@ -12,7 +12,7 @@ import PPrint (pprint)
 run :: String -> IO ()
 run str = do
   let term = parseTree str
-  let val = evaluate term
+  let val = term `seq` evaluate term
   putStrLn $ pprint val
 
 usage :: IO ()
