@@ -9,13 +9,13 @@ import DeBruijn (deBruijn)
 import Evaluator (evaluate)
 import Parser (parseTree)
 import PPrint (pprint, pprintType)
-import TypeChecker (typeCheck)
+import Type (typeOf)
 
 run :: String -> IO ()
 run str = do
   let parsed = parseTree str
   let term = parsed `seq` deBruijn parsed
-  let ttype = term `seq` typeCheck term
+  let ttype = term `seq` typeOf term
   let val = ttype `seq` evaluate term
   putStrLn $ pprint val ++ " : " ++ pprintType ttype
 

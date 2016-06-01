@@ -4,7 +4,7 @@ module PPrint (
 ) where
 
 import Context
-import Types
+import Base
 
 import Text.Printf (printf)
 

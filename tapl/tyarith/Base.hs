@@ -1,4 +1,4 @@
-module Types (
+module Base (
   Token (..)
 , Term (..)
 , TermType (..)

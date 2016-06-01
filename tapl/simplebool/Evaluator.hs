@@ -3,7 +3,7 @@ module Evaluator (
 ) where
 
 import DeBruijn (shift, substitute)
-import Types
+import Base
 
 type Term = PolyTerm DeBruijn
 

@@ -2,12 +2,12 @@ module PPrint (
   pprint
 ) where
 
-import Types
+import Base
 
 pprint :: Term -> String
 pprint TermTrue = "true"
 pprint TermFalse = "false"
-pprint t = show $ go t
+pprint t = show (go t)
   where
     go :: Term -> Int
     go TermZero = 0

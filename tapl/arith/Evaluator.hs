@@ -2,7 +2,7 @@ module Evaluator (
   evaluate
 ) where
 
-import Types
+import Base
 
 isNumericValue :: Term -> Bool
 isNumericValue TermZero = True

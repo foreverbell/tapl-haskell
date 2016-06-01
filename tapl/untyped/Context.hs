@@ -9,7 +9,7 @@ module Context (
 import           Data.List (findIndex)
 import qualified Data.HashSet as S
 
-import           Types (Context (..))
+import           Base
 
 makeEmpty :: Context
 makeEmpty = Context []

@@ -5,7 +5,7 @@ module DeBruijn (
 ) where
 
 import Context
-import Types
+import Base
 
 type Term = PolyTerm DeBruijn
 

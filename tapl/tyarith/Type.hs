@@ -1,41 +1,41 @@
-module TypeChecker (
-  typeCheck
+module Type (
+  typeOf
 ) where
 
-import Types
+import Base
 
-typeCheck :: Term -> TermType
+typeOf :: Term -> TermType
 
 {- T-True -}
-typeCheck TermTrue = TypeBool
+typeOf TermTrue = TypeBool
 
 {- T-False -}
-typeCheck TermFalse = TypeBool
+typeOf TermFalse = TypeBool
 
 {- T-If -}
-typeCheck (TermIfThenElse t t1 t2) = case typeCheck t of
+typeOf (TermIfThenElse t t1 t2) = case typeOf t of
   TypeBool -> if ty1 == ty2 
                 then ty1
                 else error "type error: arms of conditional have different types"
   _ -> error "type error: guard of conditional not a boolean"
   where
-    ty1 = typeCheck t1
-    ty2 = typeCheck t2
+    ty1 = typeOf t1
+    ty2 = typeOf t2
 
 {- T-Zero -}
-typeCheck TermZero = TypeNat
+typeOf TermZero = TypeNat
 
 {- T-Succ -}
-typeCheck (TermSucc t) = case typeCheck t of
+typeOf (TermSucc t) = case typeOf t of
   TypeNat -> TypeNat
   _ -> error "type error: argument of succ is not a number"
 
 {- T-Pred -}
-typeCheck (TermPred t) = case typeCheck t of
+typeOf (TermPred t) = case typeOf t of
   TypeNat -> TypeNat
   _ -> error "type error: argument of pred is not a number"
 
 {- T-IsZero -}
-typeCheck (TermIsZero t) = case typeCheck t of
+typeOf (TermIsZero t) = case typeOf t of
   TypeNat -> TypeBool
   _ -> error "type error: argument of iszero is not a number"

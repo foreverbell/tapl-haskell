@@ -6,7 +6,7 @@ module Lexer (
 
 import Data.Word (Word8)
 import TAPL.Helper (utf8Encode)
-import Types
+import Base
 
 }
 

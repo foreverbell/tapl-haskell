@@ -1,14 +1,14 @@
-module TypeChecker (
-  typeCheck
+module Type (
+  typeOf
 ) where
 
 import Context
-import Types
+import Base
 
 type Term = PolyTerm DeBruijn
 
-typeCheck :: Term -> TermType
-typeCheck term = go makeEmpty term
+typeOf :: Term -> TermType
+typeOf term = go makeEmpty term
 
 go :: Context -> Term -> TermType
 

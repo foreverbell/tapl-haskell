@@ -8,12 +8,12 @@ import Text.Printf (printf)
 import Evaluator (evaluate)
 import Parser (parseTree)
 import PPrint (pprint)
-import TypeChecker (typeCheck)
+import Type (typeOf)
 
 run :: String -> IO ()
 run str = do
   let term = parseTree str
-  let ttype = term `seq` typeCheck term
+  let ttype = term `seq` typeOf term
   let val = ttype `seq` evaluate term
   putStrLn $ pprint (val, ttype)
 

@@ -22,7 +22,7 @@ executable arith
   build-depends:       base >= 4.7 && < 5, tapl, array
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Evaluator Lexer Parser PPrint Types
+  other-modules:       Base Evaluator Lexer Parser PPrint
 
 executable untyped
   hs-source-dirs:      untyped
@@ -31,7 +31,7 @@ executable untyped
   build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Context DeBruijn Evaluator Lexer Parser PPrint Types
+  other-modules:       Base Context DeBruijn Evaluator Lexer Parser PPrint
 
 executable tyarith
   hs-source-dirs:      tyarith
@@ -40,7 +40,7 @@ executable tyarith
   build-depends:       base >= 4.7 && < 5, tapl, array
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Evaluator Lexer Parser PPrint TypeChecker Types
+  other-modules:       Base Evaluator Lexer Parser PPrint Type
 
 executable simplebool
   hs-source-dirs:      simplebool
@@ -49,4 +49,4 @@ executable simplebool
   build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Context DeBruijn Evaluator Lexer Parser PPrint TypeChecker Types
+  other-modules:       Base Context DeBruijn Evaluator Lexer Parser PPrint Type

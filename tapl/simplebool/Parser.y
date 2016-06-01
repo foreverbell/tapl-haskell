@@ -5,7 +5,7 @@ module Parser (
 ) where
 
 import Lexer (scanTokens)
-import Types
+import Base
 
 }
 
