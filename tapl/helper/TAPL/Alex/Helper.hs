@@ -1,5 +1,7 @@
-module TAPL.Helper (
-  utf8Encode
+module TAPL.Alex.Helper (
+  AlexInput
+, alexInputPrevChar
+, alexGetByte
 ) where
 
 import Data.Bits (shiftR, (.&.))
@@ -23,3 +25,16 @@ utf8Encode = map fromIntegral . go . ord
                       , 0x80 + ((oc `shiftR` 6) .&. 0x3f)
                       , 0x80 + oc .&. 0x3f
                       ]
+
+type AlexInput = (Char,     -- previous char
+                  [Word8],  -- pending bytes on current char
+                  String)   -- current input string
+
+alexInputPrevChar :: AlexInput -> Char
+alexInputPrevChar (c, _, _) = c
+
+alexGetByte :: AlexInput -> Maybe (Word8, AlexInput)
+alexGetByte (c, (b:bs), s) = Just (b, (c, bs, s))
+alexGetByte (_, [], []) = Nothing
+alexGetByte (_, [], (c:s)) = let (b:bs) = utf8Encode c
+                              in Just (b, (c, bs, s))
