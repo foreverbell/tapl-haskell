@@ -4,7 +4,7 @@ module Lexer (
   scanTokens
 ) where
 
-import TAPL.Alex.Helper
+import TAPL.Alex.Base
 import Base
 
 }

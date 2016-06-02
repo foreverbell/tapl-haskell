@@ -4,13 +4,17 @@ module Parser (
   parseTree
 ) where
 
-import Lexer (scanTokens)
-import Base
+import           Control.Monad.State
+
+import qualified Context as C
+import           Lexer (scanTokens)
+import           Base
 
 }
 
 %name parse Term
 %tokentype { Token }
+%monad { Parser }
 %error { parseError }
 
 %token
@@ -54,9 +58,12 @@ import Base
 %%
 
 Term :: { Term }
-  : AppTerm                           { $1 }
-  | 'lambda' var ':' Type '.' Term    { TermAbs $2 $4 $6 }
-  | 'if' Term 'then' Term 'else' Term { TermIfThenElse $2 $4 $6 }
+  : AppTerm                               { $1 }
+  | 'lambda' BinderVar ':' Type '.' Term  { TermAbs $2 $4 $6 }
+  | 'if' Term 'then' Term 'else' Term     { TermIfThenElse $2 $4 $6 }
+
+BinderVar :: { String }
+  : var                    { undefined }
 
 AppTerm :: { Term }
   : AtomicTerm             { $1 }
@@ -82,9 +89,10 @@ AtomicType :: { TermType }
   | 'Unit'                 { TypeUnit }
   | ucid                   { undefined }
   | '{' FieldsType '}'     { undefined }
+
 {
 
-type Term = PolyTerm Parsed
+type Parser = State Context
 
 parseTree :: String -> Term
 parseTree = parse . scanTokens

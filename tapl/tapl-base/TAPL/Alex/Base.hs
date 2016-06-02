@@ -1,4 +1,4 @@
-module TAPL.Alex.Helper (
+module TAPL.Alex.Base (
   AlexInput
 , alexInputPrevChar
 , alexGetByte

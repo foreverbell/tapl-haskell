@@ -1,17 +1,16 @@
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE StandaloneDeriving #-}
-
 module Base (
-  Context (..)
+  Binding (..)
+, Context (..)
 , Token (..)
-, PolyTerm (..)
-, Parsed, DeBruijn
+, Term (..)
 , TermType (..)
 ) where
 
-newtype Context = Context [(String, TermType)]
+data Binding
+  = VariableBind TermType
+  | TypeAliasBind TermType
+
+newtype Context = Context [(String, Binding)]
   deriving (Show)
 
 data Token
@@ -30,24 +29,15 @@ data Token
   | TokenLCurly | TokenRCurly
   deriving (Show)
 
-data Parsed
-data DeBruijn
-
-type family TermVarType t where
-  TermVarType Parsed = String
-  TermVarType DeBruijn = Int
-
-data PolyTerm a
-  = TermIfThenElse (PolyTerm a) (PolyTerm a) (PolyTerm a)
+data Term
+  = TermIfThenElse Term Term Term
   | TermTrue | TermFalse
-  | TermSucc (PolyTerm a) | TermPred (PolyTerm a) | TermIsZero (PolyTerm a)
+  | TermSucc Term | TermPred Term | TermIsZero Term
   | TermZero
-  | TermVar (TermVarType a)
-  | TermAbs String TermType (PolyTerm a)
-  | TermApp (PolyTerm a) (PolyTerm a)
-
-deriving instance Show (TermVarType a) => Show (PolyTerm a) 
-deriving instance Eq (TermVarType a) => Eq (PolyTerm a)
+  | TermVar Int
+  | TermAbs String TermType Term
+  | TermApp Term Term
+  deriving (Eq, Show)
 
 data TermType
   = TypeBool
