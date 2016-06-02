@@ -16,7 +16,7 @@ tokens :-
   \)                     { \_ -> TokenRBracket }
   \.                     { \_ -> TokenDot }
   \:                     { \_ -> TokenColon }
-  \->                    { \_ -> TokenArrow }
+  \-\>                   { \_ -> TokenArrow }
   [a-zA-Z]+              { \s -> case lookupKeyword s of
                                    Just t -> t
                                    Nothing -> TokenVar s }

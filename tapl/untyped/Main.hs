@@ -5,15 +5,13 @@ import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
 import Text.Printf (printf)
 
-import DeBruijn (deBruijn)
 import Evaluator (evaluate)
 import Parser (parseTree)
 import PPrint (pprint)
 
 run :: String -> IO ()
 run str = do
-  let parsed = parseTree str
-  let term = parsed `seq` deBruijn parsed
+  let term = parseTree str
   let val = term `seq` evaluate term
   putStrLn $ pprint val
 

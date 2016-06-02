@@ -5,8 +5,6 @@ module Evaluator (
 import DeBruijn (shift, substitute)
 import Base
 
-type Term = PolyTerm DeBruijn
-
 isValue :: Term -> Bool
 isValue TermTrue = True
 isValue TermFalse = True

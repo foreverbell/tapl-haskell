@@ -28,7 +28,7 @@ executable untyped
   hs-source-dirs:      untyped
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers
+  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Context DeBruijn Evaluator Lexer Parser PPrint
@@ -46,7 +46,7 @@ executable simplebool
   hs-source-dirs:      simplebool
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers
+  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Context DeBruijn Evaluator Lexer Parser PPrint Type

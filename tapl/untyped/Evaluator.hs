@@ -5,8 +5,6 @@ module Evaluator (
 import DeBruijn (shift, substitute)
 import Base
 
-type Term = PolyTerm DeBruijn
-
 -- | Call-by-value evalutation strategy, treat abstraction term as value.
 -- | A redex is reducible only if its right-hand is evaluated to value.
 isValue :: Term -> Bool

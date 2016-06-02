@@ -5,8 +5,6 @@ module Type (
 import Context
 import Base
 
-type Term = PolyTerm DeBruijn
-
 typeOf :: Term -> TermType
 typeOf term = go makeEmpty term
 

@@ -1,13 +1,7 @@
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE StandaloneDeriving #-}
-
 module Base (
   Context (..)
 , Token (..)
-, PolyTerm (..)
-, Parsed, DeBruijn
+, Term (..)
 , TermType (..)
 ) where
 
@@ -23,22 +17,13 @@ data Token
   | TokenLBracket | TokenRBracket
   deriving (Show)
 
-data Parsed
-data DeBruijn
-
-type family TermVarType t where
-  TermVarType Parsed = String
-  TermVarType DeBruijn = Int
-
-data PolyTerm a
-  = TermIfThenElse (PolyTerm a) (PolyTerm a) (PolyTerm a)
+data Term
+  = TermIfThenElse Term Term Term
   | TermTrue | TermFalse
-  | TermVar (TermVarType a)
-  | TermAbs String TermType (PolyTerm a)
-  | TermApp (PolyTerm a) (PolyTerm a)
-
-deriving instance Show (TermVarType a) => Show (PolyTerm a) 
-deriving instance Eq (TermVarType a) => Eq (PolyTerm a)
+  | TermVar Int
+  | TermAbs String TermType Term
+  | TermApp Term Term
+  deriving (Eq, Show)
 
 data TermType
   = TypeBool

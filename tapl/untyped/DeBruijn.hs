@@ -1,21 +1,9 @@
 module DeBruijn (
-  deBruijn
-, shift
+  shift
 , substitute
 ) where
 
-import Context
 import Base
-
-type Term = PolyTerm DeBruijn
-
-deBruijn :: PolyTerm Parsed -> Term
-deBruijn t = go makeEmpty t
-  where
-    go :: Context -> PolyTerm Parsed -> Term
-    go ctx (TermVar var) = TermVar (nameToIndex ctx var)
-    go ctx (TermAbs var t) = TermAbs var (go (addName ctx var) t)
-    go ctx (TermApp t1 t2) = TermApp (go ctx t1) (go ctx t2)
 
 shift :: Term -> Int -> Term
 shift t delta = go 0 t

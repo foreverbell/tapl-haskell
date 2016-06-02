@@ -7,8 +7,6 @@ import Base
 
 import Text.Printf (printf)
 
-type Term = PolyTerm DeBruijn
-
 pprint :: Term -> String
 pprint = pprintTerm makeEmpty
 

@@ -4,13 +4,18 @@ module Parser (
   parseTree
 ) where
 
-import Lexer (scanTokens)
-import Base
+
+import           Control.Monad.State
+
+import qualified Context as C
+import           Lexer (scanTokens)
+import           Base
 
 }
 
 %name parse Term
 %tokentype { Token }
+%monad { Parser }
 %error { parseError }
 
 %token
@@ -31,9 +36,12 @@ import Base
 %%
 
 Term :: { Term }
-  : AppTerm                           { $1 }
-  | 'lambda' var ':' Type '.' Term    { TermAbs $2 $4 $6 }
-  | 'if' Term 'then' Term 'else' Term { TermIfThenElse $2 $4 $6 }
+  : AppTerm                               { $1 }
+  | 'lambda' BinderVar ':' Type '.' Term  { TermAbs $2 $4 $6 }
+  | 'if' Term 'then' Term 'else' Term     { TermIfThenElse $2 $4 $6 }
+
+BinderVar :: { String }
+  : var                    {% do { addName $1; return $1; } }
 
 AppTerm :: { Term }
   : AtomicTerm             { $1 }
@@ -41,7 +49,7 @@ AppTerm :: { Term }
 
 AtomicTerm :: { Term }
   : '(' Term ')'           { $2 }
-  | var                    { TermVar $1 }
+  | var                    {% do { index <- nameToIndex $1; return (TermVar index); } }
   | 'true'                 { TermTrue }
   | 'false'                { TermFalse }
 
@@ -58,10 +66,21 @@ AtomicType :: { TermType }
 
 {
 
-type Term = PolyTerm Parsed
+type Parser = State Context
+
+nameToIndex :: String -> Parser Int
+nameToIndex name = do
+  ctx <- get
+  return $ C.nameToIndex ctx name
+
+addName :: String -> Parser ()
+addName name = do
+  ctx <- get
+  put $ C.addName ctx name undefined
 
 parseTree :: String -> Term
-parseTree = parse . scanTokens
+parseTree str = evalState (parse tokens) C.makeEmpty 
+  where tokens = scanTokens str
 
 parseError :: [Token] -> a
 parseError _ = error "parse error"
