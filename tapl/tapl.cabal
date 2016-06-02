@@ -31,7 +31,7 @@ executable untyped
   build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Context DeBruijn Evaluator Lexer Parser PPrint
+  other-modules:       Base Context Evaluator Lexer Parser PPrint
 
 executable tyarith
   hs-source-dirs:      tyarith
@@ -49,7 +49,7 @@ executable simplebool
   build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Context DeBruijn Evaluator Lexer Parser PPrint Type
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Type
 
 executable fullsimple
   hs-source-dirs:      fullsimple
