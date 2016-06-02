@@ -73,10 +73,8 @@ type AlexInput = (Char,     -- previous char
                   String)   -- current input string
 
 data AlexState = AlexState {
-  alexInput :: String,      -- the current input
-  alexChar  :: !Char,       -- the character before the input
-  alexBytes :: [Word8],
-  alexScd   :: [Int]        -- the current startcode
+  alexInput :: AlexInput
+, alexScd   :: [Int]        -- the current startcode
 }
 
 newtype Alex a = Alex { unAlex :: AlexState -> Either String (AlexState, a) }
@@ -97,8 +95,6 @@ instance Monad Alex where
 
 type AlexAction = String -> Alex Token
 
-data AlexResult = IntermediateToken Token | IntermediateEOF
-
 alexInputPrevChar :: AlexInput -> Char
 alexInputPrevChar (c, _, _) = c
 
@@ -109,10 +105,10 @@ alexGetByte (_, [], (c:s)) = let (b:bs) = utf8Encode c
                               in Just (b, (c, bs, s))
 
 alexGetInput :: Alex AlexInput
-alexGetInput = Alex $ \s@AlexState{..} -> Right (s, (alexChar, alexBytes, alexInput))
+alexGetInput = Alex $ \s@AlexState{..} -> Right (s, alexInput)
 
 alexSetInput :: AlexInput -> Alex ()
-alexSetInput (c, bs, inp) = Alex $ \s -> Right (s { alexChar = c, alexBytes = bs, alexInput = inp }, ())
+alexSetInput input = Alex $ \s -> Right (s { alexInput = input }, ())
 
 alexError :: Alex a
 alexError = Alex $ \_ -> Left "lexical error"
@@ -135,38 +131,33 @@ scanMetaChar _ = do
   t <- monadicScanToken
   alexPopStartCode
   case t of
-    IntermediateEOF -> alexError
-    IntermediateToken t -> return t
+    Nothing -> alexError
+    Just t -> return t
 
-monadicScanToken :: Alex AlexResult
+monadicScanToken :: Alex (Maybe Token)
 monadicScanToken = do
   inp@(_, _, str) <- alexGetInput
   sc <- head <$> alexGetStartCode
   case alexScan inp sc of
-    AlexEOF -> return IntermediateEOF
+    AlexEOF -> return Nothing
     AlexError _ -> alexError
     AlexSkip inp' _ -> do
       alexSetInput inp'
       monadicScanToken
     AlexToken inp' len action -> do
       alexSetInput inp'
-      IntermediateToken <$> action (take len str)
+      Just <$> action (take len str)
 
 scanTokens :: String -> Either String [Token]
-scanTokens inp = go $ AlexState { alexInput = inp
-                                , alexChar = '\n'
-                                , alexBytes = []
-                                , alexScd = [0]
-                                }
+scanTokens inp = go $ AlexState { alexInput = ('\n', [], inp), alexScd = [0] }
   where
     go s = case runAlex s monadicScanToken of
              Left err -> Left err
              Right (s', x) -> do
                case x of
-                 IntermediateEOF -> return []
-                 IntermediateToken x -> do
-                   case go s' of
-                     Left err -> Left err
-                     Right xs -> Right (x:xs)
+                 Nothing -> return []
+                 Just x -> case go s' of
+                   Left err -> Left err
+                   Right xs -> Right (x:xs)
 
 }
