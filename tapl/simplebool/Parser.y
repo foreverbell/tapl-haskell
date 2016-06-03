@@ -37,7 +37,7 @@ import           Base
 
 Term :: { Term }
   : AppTerm                               { $1 }
-  | 'lambda' BinderVar ':' Type '.' Term  {% do { dropHeadName; return (TermAbs $2 $4 $6); } }
+  | 'lambda' BinderVar ':' Type '.' Term  {% do { dropOneName; return (TermAbs $2 $4 $6); } }
   | 'if' Term 'then' Term 'else' Term     { TermIfThenElse $2 $4 $6 }
 
 BinderVar :: { String }
@@ -78,11 +78,11 @@ addName name = do
   ctx <- get
   put $ C.addName ctx name undefined
 
-dropHeadName :: Parser ()
-dropHeadName = modify C.dropHeadName
+dropOneName :: Parser ()
+dropOneName = modify C.dropOneName
 
 parseTree :: String -> Term
-parseTree str = evalState (parse tokens) C.makeEmpty 
+parseTree str = evalState (parse tokens) C.makeEmptyContext
   where tokens = scanTokens str
 
 parseError :: [Token] -> a

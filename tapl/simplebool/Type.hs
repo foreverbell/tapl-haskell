@@ -6,7 +6,7 @@ import Context
 import Base
 
 typeOf :: Term -> TermType
-typeOf term = go makeEmpty term
+typeOf term = go makeEmptyContext term
 
 go :: Context -> Term -> TermType
 

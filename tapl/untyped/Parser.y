@@ -20,7 +20,7 @@ import           Base
 %token
   '('      { TokenLBracket }
   ')'      { TokenRBracket }
-  var      { TokenVar $$ } 
+  var      { TokenVar $$ }
   'lambda' { TokenLambda }
   '.'      { TokenDot }
 
@@ -28,7 +28,7 @@ import           Base
 
 Term :: { Term }
   : AppTerm                      { $1 }
-  | 'lambda' BinderVar '.' Term  {% do { dropHeadName; return (TermAbs $2 $4); } }
+  | 'lambda' BinderVar '.' Term  {% do { dropOneName; return (TermAbs $2 $4); } }
 
 BinderVar :: { String }
   : var                    {% do { addName $1; return $1; } }
@@ -55,11 +55,11 @@ addName name = do
   ctx <- get
   put $ C.addName ctx name
 
-dropHeadName :: Parser ()
-dropHeadName = modify C.dropHeadName
+dropOneName :: Parser ()
+dropOneName = modify C.dropOneName
 
 parseTree :: String -> Term
-parseTree str = evalState (parse tokens) C.makeEmpty 
+parseTree str = evalState (parse tokens) C.makeEmptyContext
   where tokens = scanTokens str
 
 parseError :: [Token] -> a

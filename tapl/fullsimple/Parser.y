@@ -67,9 +67,9 @@ Command :: { Command }
 
 Term :: { Term }
   : AppTerm                                  { $1 }
-  | 'lambda' LambdaBinder ':' Type '.' Term  {% do { dropHeadName; return (TermAbs $2 $4 $6); } }
+  | 'lambda' LambdaBinder ':' Type '.' Term  {% do { dropOneName; return (TermAbs $2 $4 $6); } }
   | 'if' Term 'then' Term 'else' Term        { TermIfThenElse $2 $4 $6 }
-  | 'let' LetBinder 'in' Term                {% do { dropHeadName; let (v, t) = $2 in return (TermLet v t $4); } }
+  | 'let' LetBinder 'in' Term                {% do { dropOneName; let (v, t) = $2 in return (TermLet v t $4); } }
 
 LambdaBinder :: { String }
   : lcid                   {% do { addName $1; return $1; } }
@@ -108,7 +108,7 @@ AtomicType :: { TermType }
   | 'Bool'                 { TypeBool }
   | 'Nat'                  { TypeNat }
   | 'Unit'                 { TypeUnit }
-  | ucid                   {% do { index <- nameToIndex $1; return (TypeId index); } }
+  | ucid                   {% do { index <- nameToIndex $1; return (TypeVar index); } }
 --  | '{' FieldsType '}'     { undefined }
 
 {
@@ -127,13 +127,13 @@ nameToIndex name = do
 addName :: String -> Parser ()
 addName name = do
   ctx <- get
-  put $ C.addBinding ctx name DeBruijnBind
+  put $ C.addName ctx name
 
-dropHeadName :: Parser ()
-dropHeadName = modify C.dropHeadBinding
+dropOneName :: Parser ()
+dropOneName = modify C.dropOneBinding
 
 parseTree :: String -> [Command]
-parseTree str = evalState (parse tokens) C.makeEmpty
+parseTree str = evalState (parse tokens) C.makeEmptyContext
   where tokens = scanTokens str
 
 parseError :: [Token] -> a

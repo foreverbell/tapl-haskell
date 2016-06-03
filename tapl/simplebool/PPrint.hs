@@ -9,7 +9,7 @@ import Base
 import Text.Printf (printf)
 
 pprint :: Term -> String
-pprint = pprintTerm makeEmpty
+pprint = pprintTerm makeEmptyContext
 
 pprintTerm :: Context -> Term -> String
 pprintTerm ctx (TermAbs var ty t) = printf "lambda %s:%s. %s" fresh (pprintType ty) (pprintTerm ctx' t)

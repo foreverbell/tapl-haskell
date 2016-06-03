@@ -13,7 +13,7 @@ data Command
   deriving (Show)
 
 data Binding
-  = VariableBind TermType
+  = VarBind TermType
   | TermAliasBind Term
   | TypeAliasBind TermType
   | DeBruijnBind
@@ -56,5 +56,5 @@ data TermType
   | TypeNat
   | TypeUnit
   | TypeArrow TermType TermType
-  | TypeId Int  -- ^ user-defined alias
+  | TypeVar Int -- ^ user-defined alias
   deriving (Show)

@@ -1,9 +1,10 @@
-module Context ( 
-  makeEmpty
+module Context (
+  makeEmptyContext
 , nameToIndex
 , indexToBinding
 , addBinding
-, dropHeadBinding
+, addName
+, dropOneBinding
 , pickFreshName
 ) where
 
@@ -12,8 +13,10 @@ import qualified Data.HashSet as S
 
 import           Base
 
-makeEmpty :: Context
-makeEmpty = Context []
+-- | We are mixing term and type bindings in the same context, be careful when using it!
+
+makeEmptyContext :: Context
+makeEmptyContext = Context []
 
 nameToIndex :: Context -> String -> Int
 nameToIndex (Context ctx) name = case findIndex (\(var, _) -> var == name) ctx of
@@ -29,11 +32,14 @@ indexToBinding (Context ctx) index = ctx !! index
 addBinding :: Context -> String -> Binding -> Context
 addBinding (Context ctx) name binding = Context ((name, binding) : ctx)
 
-dropHeadBinding :: Context -> Context
-dropHeadBinding (Context ctx) = Context (tail ctx)
+addName :: Context -> String -> Context
+addName ctx name = addBinding ctx name DeBruijnBind
+
+dropOneBinding :: Context -> Context
+dropOneBinding (Context ctx) = Context (tail ctx)
 
 pickFreshName :: Context -> String -> (Context, String)
-pickFreshName (Context ctx) name = (addBinding (Context ctx) freshName DeBruijnBind, freshName)
+pickFreshName (Context ctx) name = (addName (Context ctx) freshName, freshName)
   where
     ctx' = S.fromList $ map fst ctx
     freshName = if name `S.member` ctx' then go 1 else name
