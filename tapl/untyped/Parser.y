@@ -28,7 +28,7 @@ import           Base
 
 Term :: { Term }
   : AppTerm                      { $1 }
-  | 'lambda' BinderVar '.' Term  { TermAbs $2 $4 }
+  | 'lambda' BinderVar '.' Term  {% do { dropHeadName; return (TermAbs $2 $4); } }
 
 BinderVar :: { String }
   : var                    {% do { addName $1; return $1; } }
@@ -54,6 +54,9 @@ addName :: String -> Parser ()
 addName name = do
   ctx <- get
   put $ C.addName ctx name
+
+dropHeadName :: Parser ()
+dropHeadName = modify C.dropHeadName
 
 parseTree :: String -> Term
 parseTree str = evalState (parse tokens) C.makeEmpty 

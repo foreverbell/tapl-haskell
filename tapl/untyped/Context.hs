@@ -3,6 +3,7 @@ module Context (
 , nameToIndex
 , indexToName
 , addName
+, dropHeadName
 , pickFreshName
 ) where
 
@@ -24,6 +25,9 @@ indexToName (Context ctx) index = ctx !! index
 
 addName :: Context -> String -> Context
 addName (Context ctx) name = Context (name : ctx)
+
+dropHeadName :: Context -> Context
+dropHeadName (Context ctx) = Context (tail ctx)
 
 pickFreshName :: Context -> String -> (Context, String)
 pickFreshName (Context ctx) name = (addName (Context ctx) freshName, freshName)
