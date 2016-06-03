@@ -1,9 +1,9 @@
-module Base ( 
+module Base (
   Token (..)
 , Term (..)
 ) where
 
-data Token 
+data Token
   = TokenInt Int
   | TokenIf | TokenThen | TokenElse
   | TokenSucc | TokenPred | TokenIsZero

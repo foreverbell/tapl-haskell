@@ -14,7 +14,7 @@ typeOf TermFalse = TypeBool
 
 {- T-If -}
 typeOf (TermIfThenElse t t1 t2) = case typeOf t of
-  TypeBool -> if ty1 == ty2 
+  TypeBool -> if ty1 == ty2
                 then ty1
                 else error "type error: arms of conditional have different types"
   _ -> error "type error: guard of conditional not a boolean"

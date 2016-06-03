@@ -18,7 +18,7 @@ go _ TermFalse = TypeBool
 
 {- T-If -}
 go ctx (TermIfThenElse t t1 t2) = case go ctx t of
-  TypeBool -> if ty1 == ty2 
+  TypeBool -> if ty1 == ty2
                 then ty1
                 else error "type error: arms of conditional have different types"
   _ -> error "type error: guard of conditional not a boolean"

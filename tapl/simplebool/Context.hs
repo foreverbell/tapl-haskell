@@ -1,4 +1,4 @@
-module Context ( 
+module Context (
   makeEmptyContext
 , nameToIndex
 , indexToName

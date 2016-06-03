@@ -24,7 +24,7 @@ import           Base
   '.'      { TokenDot }
   ':'      { TokenColon }
   '->'     { TokenArrow }
-  var      { TokenVar $$ } 
+  var      { TokenVar $$ }
   'lambda' { TokenLambda }
   'if'     { TokenIf }
   'then'   { TokenThen }

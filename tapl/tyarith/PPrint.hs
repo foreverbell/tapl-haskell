@@ -2,7 +2,7 @@ module PPrint (
   pprint
 ) where
 
-import Base 
+import Base
 
 pprint :: (Term, TermType) -> String
 pprint (t, ty) = x ++ " : " ++ y
