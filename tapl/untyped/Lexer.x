@@ -15,7 +15,7 @@ tokens :-
   \.                     { \_ -> TokenDot }
   \(                     { \_ -> TokenLBracket }
   \)                     { \_ -> TokenRBracket }
-  [a-z][a-zA-z0-9\_\']*  { \s -> TokenVar s }
+  [a-z][a-zA-Z0-9\_\']*  { \s -> TokenVar s }
 
 {
 

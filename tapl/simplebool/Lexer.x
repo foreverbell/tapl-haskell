@@ -19,7 +19,7 @@ tokens :-
   [a-zA-Z]+              { \s -> case lookupKeyword s of
                                    Just t -> t
                                    Nothing -> TokenVar s }
-  [a-z][a-zA-z0-9\_\']*  { \s -> TokenVar s }
+  [a-z][a-zA-Z0-9\_\']*  { \s -> TokenVar s }
 
 {
 

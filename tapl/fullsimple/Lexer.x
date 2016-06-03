@@ -29,7 +29,7 @@ tokens :-
   [a-zA-Z]+                 { \s -> case lookupKeyword s of
                                       Just t -> t
                                       Nothing -> createId s }
-  [a-zA-z][a-zA-z0-9\_\']*  { \s -> createId s }
+  [a-zA-Z][a-zA-z0-9\_\']*  { \s -> createId s }
 
 {
 
@@ -49,8 +49,7 @@ scanTokens str = go ('\n', [], str)
 
 createId :: String -> Token
 createId s = if c >= 'a' && c <= 'z' then TokenLCaseId s else TokenUCaseId s
-  where 
-    c = head s
+  where c = head s
 
 lookupKeyword :: String -> Maybe Token
 lookupKeyword kw = lookup kw keywords

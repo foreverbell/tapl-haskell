@@ -1,14 +1,21 @@
 module Base (
-  Binding (..)
+  Command (..)
+, Binding (..)
 , Context (..)
 , Token (..)
 , Term (..)
 , TermType (..)
 ) where
 
+data Command
+  = Eval Term
+  | Bind String Binding
+  deriving (Show)
+
 data Binding
   = VariableBind TermType
   | TypeAliasBind TermType
+  deriving (Show)
 
 newtype Context = Context [(String, Binding)]
   deriving (Show)
