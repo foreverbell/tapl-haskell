@@ -57,7 +57,7 @@ import           Base
 %%
 
 Topmost :: { [Command] }
-  : Command ';'            { [$1] }
+  :                        { [] }
   | Command ';' Topmost    { $1 : $3 }
 
 Command :: { Command }
@@ -66,22 +66,35 @@ Command :: { Command }
   | ucid '=' Type          {% do { addName $1; return (Bind $1 (TypeAliasBind $3)); } }
 
 Term :: { Term }
-  : AppTerm                               { $1 }
-  | 'lambda' BinderVar ':' Type '.' Term  { TermAbs $2 $4 $6 }
-  | 'if' Term 'then' Term 'else' Term     { TermIfThenElse $2 $4 $6 }
+  : AppTerm                                  { $1 }
+  | 'lambda' LambdaBinder ':' Type '.' Term  {% do { dropHeadName; return (TermAbs $2 $4 $6); } }
+  | 'if' Term 'then' Term 'else' Term        { TermIfThenElse $2 $4 $6 }
+  | 'let' LetBinder 'in' Term                {% do { dropHeadName; let (v, t) = $2 in return (TermLet v t $4); } }
 
-BinderVar :: { String }
+LambdaBinder :: { String }
   : lcid                   {% do { addName $1; return $1; } }
 
+LetBinder :: { (String, Term) }
+  : lcid '=' Term          {% do { addName $1; return ($1, $3); } }
+
 AppTerm :: { Term }
+  : AscribeTerm            { $1 }
+  | AppTerm AscribeTerm    { TermApp $1 $2 }
+  | 'succ' AscribeTerm     { TermSucc $2 }
+  | 'pred' AscribeTerm     { TermPred $2 }
+  | 'iszero' AscribeTerm   { TermIsZero $2 }
+
+AscribeTerm :: { Term }
   : AtomicTerm             { $1 }
-  | AppTerm AtomicTerm     { TermApp $1 $2 }
+  | AtomicTerm 'as' Type   { TermAscribe $1 $3 }
 
 AtomicTerm :: { Term }
   : '(' Term ')'           { $2 }
-  | lcid                   {% do { index <- nameToIndex $1; return (TermVar index); } }
   | 'true'                 { TermTrue }
   | 'false'                { TermFalse }
+  | int                    { intToTerm $1 }
+  | 'unit'                 { TermUnit }
+  | lcid                   {% do { index <- nameToIndex $1; return (TermVar index); } }
 
 Type :: { TermType }
   : ArrowType              { $1 }
@@ -95,10 +108,14 @@ AtomicType :: { TermType }
   | 'Bool'                 { TypeBool }
   | 'Nat'                  { TypeNat }
   | 'Unit'                 { TypeUnit }
-  | ucid                   { undefined }
+  | ucid                   {% do { index <- nameToIndex $1; return (TypeId index); } }
 --  | '{' FieldsType '}'     { undefined }
 
 {
+
+intToTerm :: Int -> Term
+intToTerm 0 = TermZero
+intToTerm n = TermSucc $ intToTerm (n - 1)
 
 type Parser = State Context
 
@@ -112,15 +129,14 @@ addName name = do
   ctx <- get
   put $ C.addBinding ctx name DeBruijnBind
 
+dropHeadName :: Parser ()
+dropHeadName = modify C.dropHeadBinding
+
 parseTree :: String -> [Command]
-parseTree str = evalState (parse tokens) C.makeEmpty 
+parseTree str = evalState (parse tokens) C.makeEmpty
   where tokens = scanTokens str
 
 parseError :: [Token] -> a
-parseError = error . show
-
-intToTerm :: Int -> Term
-intToTerm 0 = TermZero
-intToTerm n = TermSucc $ intToTerm (n - 1)
+parseError _ = error "parse error"
 
 }

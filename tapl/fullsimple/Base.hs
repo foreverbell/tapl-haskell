@@ -43,9 +43,12 @@ data Term
   | TermTrue | TermFalse
   | TermSucc Term | TermPred Term | TermIsZero Term
   | TermZero
+  | TermUnit
+  | TermLet String Term Term
   | TermVar Int
   | TermAbs String TermType Term
   | TermApp Term Term
+  | TermAscribe Term TermType
   deriving (Show)
 
 data TermType
@@ -53,5 +56,5 @@ data TermType
   | TypeNat
   | TypeUnit
   | TypeArrow TermType TermType
-  | TypeId String               -- ^ user-defined alias
+  | TypeId Int  -- ^ user-defined alias
   deriving (Show)
