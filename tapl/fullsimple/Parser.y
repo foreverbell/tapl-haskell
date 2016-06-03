@@ -12,7 +12,7 @@ import           Base
 
 }
 
-%name parse Term
+%name parse Topmost
 %tokentype { Token }
 %monad { Parser }
 %error { parseError }
@@ -23,7 +23,7 @@ import           Base
   ':'      { TokenColon }
   ';'      { TokenSemi }
   '='      { TokenEq }
-  '|'      { TokenVar }
+  '|'      { TokenVBar }
   '<'      { TokenLT }
   '>'      { TokenGT }
   '('      { TokenLParen }
@@ -50,12 +50,20 @@ import           Base
   'as'     { TokenAs }
   'case'   { TokenCase }
   'of'     { TokenOf }
-  'alias'  { TokenAlias }
   'Bool'   { TokenBool }
   'Nat'    { TokenNat }
   'Unit'   { TokenUUnit }
 
 %%
+
+Topmost :: { [Command] }
+  : Command ';'            { [$1] }
+  | Command ';' Topmost    { $1 : $3 }
+
+Command :: { Command }
+  : Term                   { Eval $1 }
+  | lcid '=' Term          {% do { addName $1; return (Bind $1 (TermAliasBind $3)); } }
+  | ucid '=' Type          {% do { addName $1; return (Bind $1 (TypeAliasBind $3)); } }
 
 Term :: { Term }
   : AppTerm                               { $1 }
@@ -63,7 +71,7 @@ Term :: { Term }
   | 'if' Term 'then' Term 'else' Term     { TermIfThenElse $2 $4 $6 }
 
 BinderVar :: { String }
-  : var                    { undefined }
+  : lcid                   {% do { addName $1; return $1; } }
 
 AppTerm :: { Term }
   : AtomicTerm             { $1 }
@@ -71,7 +79,7 @@ AppTerm :: { Term }
 
 AtomicTerm :: { Term }
   : '(' Term ')'           { $2 }
-  | var                    { TermVar $1 }
+  | lcid                   {% do { index <- nameToIndex $1; return (TermVar index); } }
   | 'true'                 { TermTrue }
   | 'false'                { TermFalse }
 
@@ -88,17 +96,28 @@ AtomicType :: { TermType }
   | 'Nat'                  { TypeNat }
   | 'Unit'                 { TypeUnit }
   | ucid                   { undefined }
-  | '{' FieldsType '}'     { undefined }
+--  | '{' FieldsType '}'     { undefined }
 
 {
 
 type Parser = State Context
 
-parseTree :: String -> Term
-parseTree = parse . scanTokens
+nameToIndex :: String -> Parser Int
+nameToIndex name = do
+  ctx <- get
+  return $ C.nameToIndex ctx name
+
+addName :: String -> Parser ()
+addName name = do
+  ctx <- get
+  put $ C.addBinding ctx name DeBruijnBind
+
+parseTree :: String -> [Command]
+parseTree str = evalState (parse tokens) C.makeEmpty 
+  where tokens = scanTokens str
 
 parseError :: [Token] -> a
-parseError _ = error "parse error"
+parseError = error . show
 
 intToTerm :: Int -> Term
 intToTerm 0 = TermZero

@@ -69,7 +69,6 @@ lookupKeyword kw = lookup kw keywords
                , ("as", TokenAs)
                , ("case", TokenCase)
                , ("of", TokenOf)
-               , ("alias", TokenAlias)
                , ("Bool", TokenBool)
                , ("Nat", TokenNat)
                , ("Unit", TokenUUnit)

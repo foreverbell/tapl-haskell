@@ -1,8 +1,8 @@
 module Context ( 
   makeEmpty
 , nameToIndex
-, indexToName
-, addName
+, indexToBinding
+, addBinding
 , pickFreshName
 ) where
 
@@ -19,15 +19,14 @@ nameToIndex (Context ctx) name = case findIndex (\(var, _) -> var == name) ctx o
   Just index -> index
   Nothing -> error $ "context error: variable " ++ name ++ " is unbound"
 
-indexToName :: Context -> Int -> (String, Binding)
-indexToName (Context ctx) index = ctx !! index
+indexToBinding :: Context -> Int -> (String, Binding)
+indexToBinding (Context ctx) index = ctx !! index
 
-addName :: Context -> String -> Binding -> Context
-addName (Context ctx) name binding = Context ((name, binding) : ctx)
+addBinding :: Context -> String -> Binding -> Context
+addBinding (Context ctx) name binding = Context ((name, binding) : ctx)
 
--- TODO: Simple Binding without type information?
-pickFreshName :: Context -> String -> Binding -> (Context, String)
-pickFreshName (Context ctx) name binding = (addName (Context ctx) freshName binding, freshName)
+pickFreshName :: Context -> String -> (Context, String)
+pickFreshName (Context ctx) name = (addBinding (Context ctx) freshName DeBruijnBind, freshName)
   where
     ctx' = S.fromList $ map fst ctx
     freshName = if name `S.member` ctx' then go 1 else name

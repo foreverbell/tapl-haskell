@@ -14,7 +14,9 @@ data Command
 
 data Binding
   = VariableBind TermType
+  | TermAliasBind Term
   | TypeAliasBind TermType
+  | DeBruijnBind
   deriving (Show)
 
 newtype Context = Context [(String, Binding)]
@@ -28,7 +30,7 @@ data Token
   | TokenTrue | TokenFalse | TokenZero
   | TokenUnit
   | TokenBool | TokenNat | TokenUUnit
-  | TokenLambda | TokenLet | TokenIn | TokenAs | TokenCase | TokenOf | TokenAlias
+  | TokenLambda | TokenLet | TokenIn | TokenAs | TokenCase | TokenOf
   | TokenArrow | TokenDDArrow
   | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenVBar
   | TokenLT | TokenGT
@@ -44,11 +46,12 @@ data Term
   | TermVar Int
   | TermAbs String TermType Term
   | TermApp Term Term
-  deriving (Eq, Show)
+  deriving (Show)
 
 data TermType
   = TypeBool
   | TypeNat
   | TypeUnit
   | TypeArrow TermType TermType
-  deriving (Eq, Show)
+  | TypeId String               -- ^ user-defined alias
+  deriving (Show)

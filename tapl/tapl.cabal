@@ -58,4 +58,4 @@ executable fullsimple
   build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Context Lexer
+  other-modules:       Base Context Lexer Parser
