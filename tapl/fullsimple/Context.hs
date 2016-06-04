@@ -33,7 +33,7 @@ addBinding :: Context -> String -> Binding -> Context
 addBinding (Context ctx) name binding = Context ((name, binding) : ctx)
 
 addName :: Context -> String -> Context
-addName ctx name = addBinding ctx name DeBruijnBind
+addName ctx name = addBinding ctx name BindDeBruijn
 
 dropOneBinding :: Context -> Context
 dropOneBinding (Context ctx) = Context (tail ctx)

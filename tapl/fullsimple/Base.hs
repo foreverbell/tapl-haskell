@@ -13,10 +13,10 @@ data Command
   deriving (Show)
 
 data Binding
-  = VarBind TermType
-  | TermAliasBind Term
-  | TypeAliasBind TermType
-  | DeBruijnBind
+  = BindVar TermType
+  | BindTermAlias Term
+  | BindTypeAlias TermType
+  | BindDeBruijn
   deriving (Show)
 
 newtype Context = Context [(String, Binding)]
@@ -30,7 +30,7 @@ data Token
   | TokenTrue | TokenFalse | TokenZero
   | TokenUnit
   | TokenBool | TokenNat | TokenUUnit
-  | TokenLambda | TokenLet | TokenIn | TokenAs | TokenCase | TokenOf
+  | TokenLambda | TokenLet | TokenIn | TokenTypeAlias | TokenAs | TokenCase | TokenOf
   | TokenArrow | TokenDDArrow
   | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenVBar
   | TokenLT | TokenGT

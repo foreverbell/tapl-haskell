@@ -47,6 +47,7 @@ import           Base
   'lambda' { TokenLambda }
   'let'    { TokenLet }
   'in'     { TokenIn }
+  'type'   { TokenTypeAlias }
   'as'     { TokenAs }
   'case'   { TokenCase }
   'of'     { TokenOf }
@@ -62,8 +63,8 @@ Topmost :: { [Command] }
 
 Command :: { Command }
   : Term                   { Eval $1 }
-  | lcid '=' Term          {% do { addName $1; return (Bind $1 (TermAliasBind $3)); } }
-  | ucid '=' Type          {% do { addName $1; return (Bind $1 (TypeAliasBind $3)); } }
+  | 'let' lcid '=' Term    {% do { addName $2; return (Bind $2 (BindTermAlias $4)); } }
+  | 'type' ucid '=' Type   {% do { addName $2; return (Bind $2 (BindTypeAlias $4)); } }
 
 Term :: { Term }
   : AppTerm                                  { $1 }

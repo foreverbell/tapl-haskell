@@ -5,8 +5,8 @@ module Evaluator (
 import Base
 
 -- | Shift up deBruijn indices of all free variables by delta.
-shift :: Term -> Int -> Term
-shift t delta = go 0 t
+termShift :: Term -> Int -> Term
+termShift t delta = go 0 t
   where
     go :: Int -> Term -> Term
     go cutoff (TermVar var)
@@ -16,14 +16,14 @@ shift t delta = go 0 t
     go cutoff (TermApp t1 t2) = TermApp (go cutoff t1) (go cutoff t2)
 
 -- | Substitute the variable with 0 deBruijn index in term to subterm.
-substitute :: Term -> Term -> Term
-substitute t subt = go 0 subt t
+termSubstitute :: Term -> Term -> Term
+termSubstitute t subt = go 0 subt t
   where
     go :: Int -> Term -> Term -> Term
     go index subt (TermVar var)
       | var == index = subt
       | otherwise = TermVar var
-    go index subt (TermAbs var t) = TermAbs var (go (index + 1) (shift subt 1) t)
+    go index subt (TermAbs var t) = TermAbs var (go (index + 1) (termShift subt 1) t)
     go index subt (TermApp t1 t2) = TermApp (go index subt t1) (go index subt t2)
 
 -- | Call-by-value evalutation strategy, treat abstraction term as value.
@@ -36,7 +36,7 @@ evaluate1 :: Term -> Maybe Term
 
 {- E-AppAbs -}
 evaluate1 (TermApp (TermAbs _ t) v)
-  | isValue v = Just $ shift (substitute t (shift v 1)) (-1)
+  | isValue v = Just $ termShift (termSubstitute t (termShift v 1)) (-1)
 
 {- E-App2 -}
 evaluate1 (TermApp v t)
