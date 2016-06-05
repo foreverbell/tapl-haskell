@@ -18,13 +18,13 @@ executeCommand ctx (Bind name (BindTypeAlias ty)) = do
   putStrLn $ pprintType ctx ty'
   return $ addBinding ctx name (BindTypeAlias ty')
 
-executeCommand ctx (Bind name (BindTermAlias t)) = do
+executeCommand ctx (Bind name (BindTermAlias t _)) = do
   let ty = typeOf ctx t
   let val = evaluate ctx t
   putStrLn $ pprint ctx val ++ " : " ++ pprintType ctx ty
-  return $ addBinding ctx name (BindTermAlias val)
+  return $ addBinding ctx name (BindTermAlias val (Just ty))
 
-executeCommand ctx (Bind _ _) = undefined
+executeCommand _ (Bind _ _) = undefined
 
 executeCommand ctx (Eval t) = do
   let ty = typeOf ctx t

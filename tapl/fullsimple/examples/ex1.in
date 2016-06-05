@@ -3,14 +3,19 @@ type T2 = T1->T1;
 type T3 = T2->Bool;
 
 (lambda x:Nat->Nat. x) as T2;
-(lambda x:T1. x);
+lambda x:T1. x;
 
 unit as Unit;
 
-(lambda x:Bool. unit);
+lambda x:Bool. unit;
 
 (lambda x:T2. x) (lambda x:T1. x) (lambda x:Nat. x);
 
-(lambda x:Bool->Bool. if x false then true else false) (lambda x:Bool. if x then false else true);
+(lambda x:Bool->Bool. if x false then true else false)
+  (lambda x:Bool. if x then false else true);
 
-type T4 = T4->Bool;
+let x=42;
+succ (pred x);
+
+let foo = lambda x:Nat. succ (succ x);
+foo 2;

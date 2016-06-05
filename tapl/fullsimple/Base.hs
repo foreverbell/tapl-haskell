@@ -14,7 +14,7 @@ data Command
 
 data Binding
   = BindVar TermType
-  | BindTermAlias Term
+  | BindTermAlias Term (Maybe TermType)
   | BindTypeAlias TermType
   | BindDeBruijn
   deriving (Show)

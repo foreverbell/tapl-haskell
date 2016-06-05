@@ -37,7 +37,7 @@ getBindingTerm :: Context -> Int -> Term
 getBindingTerm ctx index = termShift t (index + 1) -- Shift all term variables to meet the current context.
   where
     t = case snd (indexToBinding ctx index) of
-          BindTermAlias t -> t
+          BindTermAlias t _ -> t
           _ -> undefined
 
 isNumericValue :: Term -> Bool

@@ -63,7 +63,7 @@ Topmost :: { [Command] }
 
 Command :: { Command }
   : Term                   { Eval $1 }
-  | 'let' lcid '=' Term    {% do { addName $2; return (Bind $2 (BindTermAlias $4)); } }
+  | 'let' lcid '=' Term    {% do { addName $2; return (Bind $2 (BindTermAlias $4 Nothing)); } }
   | 'type' ucid '=' Type   {% do { addName $2; return (Bind $2 (BindTypeAlias $4)); } }
 
 Term :: { Term }
