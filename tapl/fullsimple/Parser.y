@@ -67,13 +67,13 @@ Command :: { Command }
   | 'type' ucid '=' Type   {% do { addName $2; return (Bind $2 (BindTypeAlias $4)); } }
 
 Term :: { Term }
-  : AppTerm                                  { $1 }
-  | 'lambda' LambdaBinder ':' Type '.' Term  {% do { dropOneName; return (TermAbs $2 $4 $6); } }
-  | 'if' Term 'then' Term 'else' Term        { TermIfThenElse $2 $4 $6 }
-  | 'let' LetBinder 'in' Term                {% do { dropOneName; let (v, t) = $2 in return (TermLet v t $4); } }
+  : AppTerm                            { $1 }
+  | 'lambda' LambdaBinder '.' Term     {% do { dropOneName; let (v, ty) = $2 in return (TermAbs v ty $4); } }
+  | 'if' Term 'then' Term 'else' Term  { TermIfThenElse $2 $4 $6 }
+  | 'let' LetBinder 'in' Term          {% do { dropOneName; let (v, t) = $2 in return (TermLet v t $4); } }
 
-LambdaBinder :: { String }
-  : lcid                   {% do { addName $1; return $1; } }
+LambdaBinder :: { (String, TermType) }
+  : lcid ':' Type          {% do { addName $1; return ($1, $3); } }
 
 LetBinder :: { (String, Term) }
   : lcid '=' Term          {% do { addName $1; return ($1, $3); } }

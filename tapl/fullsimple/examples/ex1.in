@@ -1,3 +1,5 @@
 type T1 = Nat->Nat;
 type T2 = T1->T1;
 type T3 = T2->Bool;
+
+(lambda x:Nat->Nat. x) as T2;

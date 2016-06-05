@@ -11,14 +11,23 @@ import Parser (parseTree)
 import PPrint (pprintType)
 import Type (typeOf, evaluateType)
 
+executeCommand :: Context -> Command -> IO Context
+executeCommand ctx (Bind name (BindTypeAlias ty)) = do
+  let ty' = evaluateType ctx ty
+  putStrLn $ pprintType ctx ty'
+  return $ addBinding ctx name (BindTypeAlias ty')
+
+executeCommand ctx (Eval t) = do
+  putStrLn $ show ctx
+  let ty = typeOf ctx t
+  putStrLn $ pprintType ctx ty
+  return ctx
+
 run :: String -> IO ()
 run str = do
   let commands = parseTree str
-  let foo ctx (Bind name (BindTypeAlias ty)) = do
-        let ty' = evaluateType ctx ty
-        putStrLn $ pprintType ctx ty'
-        return $ addBinding ctx name (BindTypeAlias ty)
-  foldM foo makeEmptyContext commands
+  putStrLn $ show commands
+  foldM executeCommand makeEmptyContext commands
   return ()
 
 usage :: IO ()
