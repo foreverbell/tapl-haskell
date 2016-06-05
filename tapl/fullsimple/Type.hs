@@ -20,11 +20,6 @@ typeMap onvar ty = go ty
 typeShift :: TermType -> Int -> TermType
 typeShift ty delta = typeMap (\var -> TypeVar (var + delta)) ty
 
-{-
-typeSubstitute :: TermType -> Int -> TermType -> TermType
-typeSubstitute ty index subty = typeMap (\var -> if var == index then subty else TypeVar var) ty
--}
-
 getBindingType :: Context -> Int -> TermType
 getBindingType ctx index = typeShift ty (index + 1) -- Shift all type variables to meet the current context.
   where

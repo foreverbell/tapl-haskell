@@ -18,7 +18,6 @@ executeCommand ctx (Bind name (BindTypeAlias ty)) = do
   return $ addBinding ctx name (BindTypeAlias ty')
 
 executeCommand ctx (Eval t) = do
-  putStrLn $ show ctx
   let ty = typeOf ctx t
   putStrLn $ pprintType ctx ty
   return ctx
@@ -26,7 +25,6 @@ executeCommand ctx (Eval t) = do
 run :: String -> IO ()
 run str = do
   let commands = parseTree str
-  putStrLn $ show commands
   foldM executeCommand makeEmptyContext commands
   return ()
 
