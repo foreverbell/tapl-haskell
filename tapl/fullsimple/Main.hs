@@ -7,8 +7,9 @@ import Text.Printf (printf)
 
 import Base
 import Context
+import Evaluator (evaluate)
 import Parser (parseTree)
-import PPrint (pprintType)
+import PPrint (pprint, pprintType)
 import Type (typeOf, evaluateType)
 
 executeCommand :: Context -> Command -> IO Context
@@ -17,9 +18,18 @@ executeCommand ctx (Bind name (BindTypeAlias ty)) = do
   putStrLn $ pprintType ctx ty'
   return $ addBinding ctx name (BindTypeAlias ty')
 
+executeCommand ctx (Bind name (BindTermAlias t)) = do
+  let ty = typeOf ctx t
+  let val = evaluate ctx t
+  putStrLn $ pprint ctx val ++ " : " ++ pprintType ctx ty
+  return $ addBinding ctx name (BindTermAlias val)
+
+executeCommand ctx (Bind _ _) = undefined
+
 executeCommand ctx (Eval t) = do
   let ty = typeOf ctx t
-  putStrLn $ pprintType ctx ty
+  let val = evaluate ctx t
+  putStrLn $ pprint ctx val ++ " : " ++ pprintType ctx ty
   return ctx
 
 run :: String -> IO ()
