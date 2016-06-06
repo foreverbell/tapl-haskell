@@ -64,7 +64,7 @@ pprintAtomicType :: Context -> TermType -> String
 pprintAtomicType _ TypeBool = "Bool"
 pprintAtomicType _ TypeNat = "Nat"
 pprintAtomicType _ TypeUnit = "Unit"
-pprintAtomicType ctx (TypeRecord fields) = pprintFieldTypes ctx fields
+pprintAtomicType ctx (TypeRecord fields) = printf "{%s}" (pprintFieldTypes ctx fields)
 pprintAtomicType ctx (TypeVar var) = fst $ indexToBinding ctx var
 pprintAtomicType ctx t = printf "(%s)" (pprintType ctx t)
 
