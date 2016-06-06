@@ -7,7 +7,7 @@ lambda x:T1. x;
 
 unit as Unit;
 
-lambda x:Bool. unit;
+lambda _:Bool. unit;
 
 (lambda x:T2. x) (lambda x:T1. x) (lambda x:Nat. x);
 
@@ -19,3 +19,10 @@ succ (pred x);
 
 let foo = lambda x:Nat. succ (succ x);
 foo 2;
+
+let x=true in x;
+
+{x=true, y=false};
+{x=true, y=false}.x;
+
+(if false then {a=0, b=true} else {a=succ 0, b=false}).b;

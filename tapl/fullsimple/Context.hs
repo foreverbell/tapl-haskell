@@ -39,6 +39,7 @@ dropOneBinding :: Context -> Context
 dropOneBinding (Context ctx) = Context (tail ctx)
 
 pickFreshName :: Context -> String -> (Context, String)
+pickFreshName ctx "_" = (addName ctx "_", "_")
 pickFreshName (Context ctx) name = (addName (Context ctx) freshName, freshName)
   where
     ctx' = S.fromList $ map fst ctx

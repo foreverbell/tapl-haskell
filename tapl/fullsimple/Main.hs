@@ -1,6 +1,6 @@
 module Main where
 
-import Control.Monad (forever, foldM)
+import Control.Monad (forever, foldM, void)
 import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
 import Text.Printf (printf)
@@ -33,10 +33,7 @@ executeCommand ctx (Eval t) = do
   return ctx
 
 run :: String -> IO ()
-run str = do
-  let commands = parseTree str
-  foldM executeCommand makeEmptyContext commands
-  return ()
+run str = void $ foldM executeCommand makeEmptyContext (parseTree str)
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName

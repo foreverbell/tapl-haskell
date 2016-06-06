@@ -24,6 +24,7 @@ import           Base
   ';'      { TokenSemi }
   '='      { TokenEq }
   '|'      { TokenVBar }
+  '_'      { TokenUScore }
   '<'      { TokenLT }
   '>'      { TokenGT }
   '('      { TokenLParen }
@@ -74,16 +75,21 @@ Term :: { Term }
 
 LambdaBinder :: { (String, TermType) }
   : lcid ':' Type          {% do { addName $1; return ($1, $3); } }
+  | '_' ':' Type           {% do { addName "_"; return ("_", $3); } }
 
 LetBinder :: { (String, Term) }
   : lcid '=' Term          {% do { addName $1; return ($1, $3); } }
 
 AppTerm :: { Term }
-  : AscribeTerm            { $1 }
-  | AppTerm AscribeTerm    { TermApp $1 $2 }
-  | 'succ' AscribeTerm     { TermSucc $2 }
-  | 'pred' AscribeTerm     { TermPred $2 }
-  | 'iszero' AscribeTerm   { TermIsZero $2 }
+  : PathTerm               { $1 }
+  | AppTerm PathTerm       { TermApp $1 $2 }
+  | 'succ' PathTerm        { TermSucc $2 }
+  | 'pred' PathTerm        { TermPred $2 }
+  | 'iszero' PathTerm      { TermIsZero $2 }
+
+PathTerm :: { Term }
+  : PathTerm '.' lcid      { TermProj $1 $3 }
+  | AscribeTerm            { $1 }
 
 AscribeTerm :: { Term }
   : AtomicTerm             { $1 }
@@ -95,7 +101,15 @@ AtomicTerm :: { Term }
   | 'false'                { TermFalse }
   | int                    { intToTerm $1 }
   | 'unit'                 { TermUnit }
+  | '{' Fields '}'         { TermRecord $2 }
   | lcid                   {% do { index <- nameToIndex $1; return (TermVar index); } }
+
+Fields :: { [(String, Term)] }
+  : Field                  { [$1] }
+  | Field ',' Fields       { $1 : $3 }
+
+Field :: { (String, Term) }
+  : lcid '=' Term          { ($1, $3) }
 
 Type :: { TermType }
   : ArrowType              { $1 }
@@ -109,8 +123,15 @@ AtomicType :: { TermType }
   | 'Bool'                 { TypeBool }
   | 'Nat'                  { TypeNat }
   | 'Unit'                 { TypeUnit }
+  | '{' FieldTypes '}'     { TypeRecord $2 }
   | ucid                   {% do { index <- nameToIndex $1; return (TypeVar index); } }
---  | '{' FieldsType '}'     { undefined }
+
+FieldTypes :: { [(String, TermType)] }
+  : FieldType                  { [$1] }
+  | FieldType ',' FieldTypes  { $1 : $3 }
+
+FieldType :: { (String, TermType) }
+  : lcid ':' Type              { ($1, $3) }
 
 {
 

@@ -8,12 +8,15 @@ module Type (
 import Base
 import Context
 
+import Data.List (find)
+
 typeMap :: (Int -> TermType) -> TermType -> TermType
 typeMap onvar ty = go ty
   where
     go TypeBool = TypeBool
     go TypeNat = TypeNat
     go TypeUnit = TypeUnit
+    go (TypeRecord fields) = TypeRecord (map (\(f, ty) -> (f, go ty)) fields)
     go (TypeArrow ty1 ty2) = TypeArrow (go ty1) (go ty2)
     go (TypeVar var) = onvar var
 
@@ -45,6 +48,7 @@ typeEqual ctx ty1 ty2 = case (ty1, ty2) of
   (TypeBool, TypeBool) -> True
   (TypeNat, TypeNat) -> True
   (TypeUnit, TypeUnit) -> True
+  (TypeRecord fields1, TypeRecord fields2) -> length fields1 == length fields2 && all (\((f1, ty1), (f2, ty2)) -> f1 == f2 && typeEqual ctx ty1 ty2) (zip fields1 fields2)
   (TypeArrow tya1 tya2, TypeArrow tyb1 tyb2) -> typeEqual ctx tya1 tyb1 && typeEqual ctx tya2 tyb2
   (TypeVar i, TypeVar j) -> i == j
   (TypeVar _, _) -> typeEqual ctx (simplifyType ctx ty1) ty2
@@ -84,6 +88,14 @@ typeOf ctx (TermIsZero t) =
     else error "type error: argument of iszero is not a number"
 
 typeOf _ TermUnit = TypeUnit
+
+typeOf ctx (TermRecord fields) = TypeRecord (map (\(f, t) -> (f, typeOf ctx t)) fields)
+
+typeOf ctx (TermProj t field) = case simplifyType ctx (typeOf ctx t) of
+  TypeRecord fields -> case find (\(f, _) -> f == field) fields of
+                         Just (_, ty) -> ty
+                         Nothing -> error $ "type error: field " ++ field ++ " not found"
+  _ -> error "type error: expected record type"
 
 typeOf ctx (TermLet var t1 t2) = typeShift (typeOf ctx' t2) (-1)
   where

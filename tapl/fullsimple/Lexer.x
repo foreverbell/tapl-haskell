@@ -17,6 +17,7 @@ tokens :-
   \;                        { \_ -> TokenSemi }
   \=                        { \_ -> TokenEq }
   \|                        { \_ -> TokenVBar }
+  \_                        { \_ -> TokenUScore }
   \<                        { \_ -> TokenLT }
   \>                        { \_ -> TokenGT }
   \(                        { \_ -> TokenLParen }

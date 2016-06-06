@@ -5,6 +5,8 @@ module Evaluator (
 import Base
 import Context
 
+import Data.List (find)
+
 termMap :: (Int -> Int -> Term) -> Term -> Term
 termMap onvar t = go 0 t
   where
@@ -16,6 +18,8 @@ termMap onvar t = go 0 t
     go index (TermIsZero t) = TermIsZero (go index t)
     go _ TermZero = TermZero
     go _ TermUnit = TermUnit
+    go index (TermRecord fields) = TermRecord (map (\(f, t) -> (f, go index t)) fields)
+    go index (TermProj t field) = TermProj (go index t) field
     go index (TermLet var t1 t2) = TermLet var (go index t1) (go (index + 1) t2)
     go index (TermVar var) = onvar index var
     go index (TermAbs var ty t) = TermAbs var ty (go (index + 1) t)
@@ -50,6 +54,7 @@ isValue :: Term -> Bool
 isValue TermTrue = True
 isValue TermFalse = True
 isValue TermUnit = True
+isValue (TermRecord fields) = all (\(_, t) -> isValue t) fields
 isValue (TermAbs _ _ _) = True
 isValue t = isNumericValue t
 
@@ -84,6 +89,24 @@ evaluate1 _ (TermIsZero (TermSucc nv))
 evaluate1 ctx (TermIsZero t) = do
   t' <- evaluate1 ctx t
   return $ TermIsZero t'
+
+evaluate1 ctx (TermRecord fields) = TermRecord <$> go ctx fields
+  where
+    go _ [] = Nothing
+    go ctx ((f,t):rest)
+      | isValue t = do
+          rest' <- go ctx rest
+          return ((f,t):rest')
+      | otherwise = do
+          t' <- evaluate1 ctx t
+          return ((f,t'):rest)
+
+evaluate1 _ (TermProj v@(TermRecord fields) f)
+  | isValue v = snd <$> find (\(f1, _) -> f1 == f) fields
+
+evaluate1 ctx (TermProj t f) = do
+  t' <- evaluate1 ctx t
+  return $ TermProj t' f
 
 evaluate1 _ (TermLet _ v t)
   | isValue v = Just $ termSubstituteTop t v

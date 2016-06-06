@@ -6,6 +6,7 @@ module PPrint (
 import Base
 import Context (indexToBinding, pickFreshName)
 
+import Data.List (intercalate)
 import Text.Printf (printf)
 
 pprint :: Context -> Term -> String
@@ -22,15 +23,19 @@ pprintTerm ctx (TermLet var t1 t2) = printf "let %s=%s in %s" fresh (pprintTerm 
 pprintTerm ctx t = pprintAppTerm ctx t
 
 pprintAppTerm :: Context -> Term -> String
-pprintAppTerm ctx (TermApp t1 t2) = printf "%s %s" (pprintAppTerm ctx t1) (pprintAscribeTerm ctx t2)
+pprintAppTerm ctx (TermApp t1 t2) = printf "%s %s" (pprintAppTerm ctx t1) (pprintPathTerm ctx t2)
 pprintAppTerm ctx t0@(TermSucc t) = case pprintNat t0 of
   Just p -> p
-  Nothing -> printf "succ %s" (pprintAscribeTerm ctx t)
+  Nothing -> printf "succ %s" (pprintPathTerm ctx t)
 pprintAppTerm ctx t0@(TermPred t) = case pprintNat t0 of
   Just p -> p
-  Nothing -> printf "pred %s" (pprintAscribeTerm ctx t)
-pprintAppTerm ctx (TermIsZero t) = printf "iszero %s" (pprintAscribeTerm ctx t)
-pprintAppTerm ctx t = pprintAscribeTerm ctx t
+  Nothing -> printf "pred %s" (pprintPathTerm ctx t)
+pprintAppTerm ctx (TermIsZero t) = printf "iszero %s" (pprintPathTerm ctx t)
+pprintAppTerm ctx t = pprintPathTerm ctx t
+
+pprintPathTerm :: Context -> Term -> String
+pprintPathTerm ctx (TermProj t field) = printf "%s.%s" (pprintPathTerm ctx t) field
+pprintPathTerm ctx t = pprintAscribeTerm ctx t
 
 pprintAscribeTerm :: Context -> Term -> String
 pprintAscribeTerm ctx (TermAscribe t ty) = printf "%s as %s" (pprintAtomicTerm ctx t) (pprintType ctx ty)
@@ -41,8 +46,12 @@ pprintAtomicTerm _ TermTrue = "true"
 pprintAtomicTerm _ TermFalse = "false"
 pprintAtomicTerm _ TermZero = "0"
 pprintAtomicTerm _ TermUnit = "unit"
+pprintAtomicTerm ctx (TermRecord fields) = printf "{%s}" (pprintFields ctx fields)
 pprintAtomicTerm ctx (TermVar var) = fst $ indexToBinding ctx var
 pprintAtomicTerm ctx t = printf "(%s)" (pprintTerm ctx t)
+
+pprintFields :: Context -> [(String, Term)] -> String
+pprintFields ctx fields = intercalate "," (map (\(f, t) -> f ++ "=" ++ pprintTerm ctx t) fields)
 
 pprintType :: Context -> TermType -> String
 pprintType ctx ty = pprintArrowType ctx ty
@@ -55,8 +64,12 @@ pprintAtomicType :: Context -> TermType -> String
 pprintAtomicType _ TypeBool = "Bool"
 pprintAtomicType _ TypeNat = "Nat"
 pprintAtomicType _ TypeUnit = "Unit"
+pprintAtomicType ctx (TypeRecord fields) = pprintFieldTypes ctx fields
 pprintAtomicType ctx (TypeVar var) = fst $ indexToBinding ctx var
 pprintAtomicType ctx t = printf "(%s)" (pprintType ctx t)
+
+pprintFieldTypes :: Context -> [(String, TermType)] -> String
+pprintFieldTypes ctx fields = intercalate "," (map (\(f, t) -> f ++ ":" ++ pprintType ctx t) fields)
 
 pprintNat :: Term -> Maybe String
 pprintNat t = show <$> go t

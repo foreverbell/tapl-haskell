@@ -32,7 +32,7 @@ data Token
   | TokenBool | TokenNat | TokenUUnit
   | TokenLambda | TokenLet | TokenIn | TokenTypeAlias | TokenAs | TokenCase | TokenOf
   | TokenArrow | TokenDDArrow
-  | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenVBar
+  | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenVBar | TokenUScore
   | TokenLT | TokenGT
   | TokenLParen | TokenRParen
   | TokenLCurly | TokenRCurly
@@ -44,6 +44,8 @@ data Term
   | TermSucc Term | TermPred Term | TermIsZero Term
   | TermZero
   | TermUnit
+  | TermRecord [(String, Term)]
+  | TermProj Term String  -- TODO: Projection index sets to integer would be better.
   | TermLet String Term Term
   | TermVar Int
   | TermAbs String TermType Term
@@ -55,6 +57,7 @@ data TermType
   = TypeBool
   | TypeNat
   | TypeUnit
+  | TypeRecord [(String, TermType)]
   | TypeArrow TermType TermType
   | TypeVar Int -- ^ user-defined alias
   deriving (Show)
