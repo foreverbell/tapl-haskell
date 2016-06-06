@@ -5,10 +5,11 @@ module Type (
 , evaluateType
 ) where
 
-import Base
-import Context
+import           Base
+import           Context
 
-import Data.List (find)
+import           Data.List (find)
+import qualified Data.HashSet as S
 
 typeMap :: (Int -> TermType) -> TermType -> TermType
 typeMap onvar ty = go ty
@@ -89,7 +90,12 @@ typeOf ctx (TermIsZero t) =
 
 typeOf _ TermUnit = TypeUnit
 
-typeOf ctx (TermRecord fields) = TypeRecord (map (\(f, t) -> (f, typeOf ctx t)) fields)
+typeOf ctx (TermRecord fields) =
+  if unique
+    then TypeRecord (map (\(f, t) -> (f, typeOf ctx t)) fields)
+    else error $ "type error: record contains duplicate field"
+  where
+    unique = S.size (S.fromList (map fst fields)) == length fields
 
 typeOf ctx (TermProj t field) = case simplifyType ctx (typeOf ctx t) of
   TypeRecord fields -> case find (\(f, _) -> f == field) fields of
