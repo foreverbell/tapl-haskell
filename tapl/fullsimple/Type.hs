@@ -93,7 +93,7 @@ typeOf _ TermUnit = TypeUnit
 typeOf ctx (TermRecord fields) =
   if unique
     then TypeRecord (map (\(f, t) -> (f, typeOf ctx t)) fields)
-    else error $ "type error: record contains duplicate field"
+    else error "type error: record contains duplicate field"
   where
     unique = S.size (S.fromList (map fst fields)) == length fields
 
@@ -107,6 +107,13 @@ typeOf ctx (TermLet var t1 t2) = typeShift (typeOf ctx' t2) (-1)
   where
     ty1 = typeOf ctx t1
     ctx' = addBinding ctx var (BindVar ty1)
+
+typeOf ctx (TermFix t) = case simplifyType ctx (typeOf ctx t) of
+  TypeArrow ty1 ty2 ->
+    if typeEqual ctx ty1 ty2
+      then ty1
+      else error "result of body not compatible with domain"
+  _ -> error "arrow type expected"
 
 typeOf ctx (TermVar var) = getBindingType ctx var
 

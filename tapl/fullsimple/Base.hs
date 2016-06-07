@@ -1,5 +1,5 @@
 module Base (
-  Command (..)
+  Statement (..)
 , Binding (..)
 , Context (..)
 , Token (..)
@@ -7,7 +7,7 @@ module Base (
 , TermType (..)
 ) where
 
-data Command
+data Statement
   = Eval Term
   | Bind String Binding
   deriving (Show)
@@ -30,7 +30,7 @@ data Token
   | TokenTrue | TokenFalse | TokenZero
   | TokenUnit
   | TokenBool | TokenNat | TokenUUnit
-  | TokenLambda | TokenLet | TokenIn | TokenTypeAlias | TokenAs | TokenCase | TokenOf
+  | TokenLambda | TokenLet | TokenIn | TokenLetrec | TokenTypeAlias | TokenAs | TokenCase | TokenOf
   | TokenArrow | TokenDDArrow
   | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenVBar | TokenUScore
   | TokenLT | TokenGT
@@ -45,8 +45,9 @@ data Term
   | TermZero
   | TermUnit
   | TermRecord [(String, Term)]
-  | TermProj Term String  -- TODO: Projection index sets to integer would be better.
+  | TermProj Term String
   | TermLet String Term Term
+  | TermFix Term
   | TermVar Int
   | TermAbs String TermType Term
   | TermApp Term Term

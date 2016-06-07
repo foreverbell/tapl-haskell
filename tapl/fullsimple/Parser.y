@@ -48,6 +48,7 @@ import           Base
   'lambda' { TokenLambda }
   'let'    { TokenLet }
   'in'     { TokenIn }
+  'letrec' { TokenLetrec }
   'type'   { TokenTypeAlias }
   'as'     { TokenAs }
   'case'   { TokenCase }
@@ -58,20 +59,24 @@ import           Base
 
 %%
 
-Topmost :: { [Command] }
+Topmost :: { [Statement] }
   :                        { [] }
-  | Command ';' Topmost    { $1 : $3 }
+  | Statement ';' Topmost  { $1 : $3 }
 
-Command :: { Command }
+Statement :: { Statement }
   : Term                   { Eval $1 }
-  | 'let' lcid '=' Term    {% do { addName $2; return (Bind $2 (BindTermAlias $4 Nothing)); } }
   | 'type' ucid '=' Type   {% do { addName $2; return (Bind $2 (BindTypeAlias $4)); } }
+  | 'let' lcid '=' Term    {% do { addName $2; return (Bind $2 (BindTermAlias $4 Nothing)); } }
+  | 'letrec' LambdaBinder '=' Term
+                           {% do { let (v, ty) = $2 in return (Bind v (BindTermAlias (TermFix (TermAbs v ty $4)) Nothing)); } }
 
 Term :: { Term }
   : AppTerm                            { $1 }
   | 'lambda' LambdaBinder '.' Term     {% do { dropOneName; let (v, ty) = $2 in return (TermAbs v ty $4); } }
   | 'if' Term 'then' Term 'else' Term  { TermIfThenElse $2 $4 $6 }
   | 'let' LetBinder 'in' Term          {% do { dropOneName; let (v, t) = $2 in return (TermLet v t $4); } }
+  | 'letrec' LambdaBinder '=' Term 'in' Term
+                                       {% do { dropOneName; let (v, ty) = $2 in return (TermLet v (TermFix (TermAbs v ty $4)) $6); } }
 
 LambdaBinder :: { (String, TermType) }
   : lcid ':' Type          {% do { addName $1; return ($1, $3); } }
@@ -79,6 +84,7 @@ LambdaBinder :: { (String, TermType) }
 
 LetBinder :: { (String, Term) }
   : lcid '=' Term          {% do { addName $1; return ($1, $3); } }
+  | '_' '=' Term           {% do { addName "_"; return ("_", $3); } }
 
 AppTerm :: { Term }
   : PathTerm               { $1 }
@@ -128,7 +134,7 @@ AtomicType :: { TermType }
 
 FieldTypes :: { [(String, TermType)] }
   : FieldType                  { [$1] }
-  | FieldType ',' FieldTypes  { $1 : $3 }
+  | FieldType ',' FieldTypes   { $1 : $3 }
 
 FieldType :: { (String, TermType) }
   : lcid ':' Type              { ($1, $3) }
@@ -154,7 +160,7 @@ addName name = do
 dropOneName :: Parser ()
 dropOneName = modify C.dropOneBinding
 
-parseTree :: String -> [Command]
+parseTree :: String -> [Statement]
 parseTree str = evalState (parse tokens) C.makeEmptyContext
   where tokens = scanTokens str
 

@@ -1,0 +1,14 @@
+letrec add:Nat->Nat->Nat =
+  lambda a:Nat. lambda b:Nat.
+    if iszero a
+      then b
+      else add (pred a) (succ b);
+
+letrec fib:Nat->Nat =
+  lambda n:Nat.
+    if iszero n
+      then 1
+      else if iszero (pred n)
+             then 1
+             else add (fib (pred n)) (fib (pred (pred n)))
+in fib 10;

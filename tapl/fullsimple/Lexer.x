@@ -67,6 +67,7 @@ lookupKeyword kw = lookup kw keywords
                , ("lambda", TokenLambda)
                , ("let", TokenLet)
                , ("in", TokenIn)
+               , ("letrec", TokenLetrec)
                , ("type", TokenTypeAlias)
                , ("as", TokenAs)
                , ("case", TokenCase)

@@ -21,6 +21,7 @@ termMap onvar t = go 0 t
     go index (TermRecord fields) = TermRecord (map (\(f, t) -> (f, go index t)) fields)
     go index (TermProj t field) = TermProj (go index t) field
     go index (TermLet var t1 t2) = TermLet var (go index t1) (go (index + 1) t2)
+    go index (TermFix t) = TermFix (go index t)
     go index (TermVar var) = onvar index var
     go index (TermAbs var ty t) = TermAbs var ty (go (index + 1) t)
     go index (TermApp t1 t2) = TermApp (go index t1) (go index t2)
@@ -32,7 +33,7 @@ termShift t delta = termMap (\index var -> if var >= index then TermVar (var + d
 
 -- | Substitute the variable with 0 deBruijn index in term to subterm.
 termSubstitute :: Term -> Term -> Term
-termSubstitute t subt = termMap (\index var -> if var == index then subt else TermVar var) t
+termSubstitute t subt = termMap (\index var -> if var == index then termShift subt index else TermVar var) t
 
 termSubstituteTop :: Term -> Term -> Term
 termSubstituteTop t subt = termShift (termSubstitute t (termShift subt 1)) (-1)
@@ -114,6 +115,12 @@ evaluate1 _ (TermLet _ v t)
 evaluate1 ctx (TermLet var t1 t2) = do
   t1' <- evaluate1 ctx t1
   return $ TermLet var t1' t2
+
+evaluate1 _ t1@(TermFix (TermAbs _ _ t2)) = Just $ termSubstituteTop t2 t1
+
+evaluate1 ctx (TermFix t) = do
+  t' <- evaluate1 ctx t
+  return $ TermFix t'
 
 evaluate1 ctx (TermVar var) = Just $ getBindingTerm ctx var
 
