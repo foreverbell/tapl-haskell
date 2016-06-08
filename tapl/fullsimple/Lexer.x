@@ -30,7 +30,7 @@ tokens :-
   [a-zA-Z]+                 { \s -> case lookupKeyword s of
                                       Just t -> t
                                       Nothing -> createId s }
-  [a-zA-Z][a-zA-z0-9\_\']*  { \s -> createId s }
+  [a-zA-Z][a-zA-Z0-9\_\']*  { \s -> createId s }
 
 {
 
