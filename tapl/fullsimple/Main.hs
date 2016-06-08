@@ -15,7 +15,7 @@ import Type (typeOf, evaluateType)
 executeStatement :: Context -> Statement -> IO Context
 executeStatement ctx (BindType name ty) = do
   let ty' = evaluateType ctx ty
-  putStrLn $ pprintType ctx ty'
+  putStrLn $ "[Type] " ++ pprintType ctx ty'
   return $ addBinding ctx name (BindTypeAlias ty')
 
 executeStatement ctx (BindLet pat t) = do
@@ -27,7 +27,7 @@ executeStatement ctx (BindLet pat t) = do
       merge ctx (name, t) = do
         let ty = typeOf ctx t
         let val = ty `seq` evaluate ctx t
-        putStrLn $ name ++ " = " ++ pprint ctx val ++ " : " ++ pprintType ctx ty
+        putStrLn $ "[Variable] " ++ name ++ " = " ++ pprint ctx val ++ " : " ++ pprintType ctx ty
         return $ addBinding ctx name (BindTermAlias val ty)
 
 executeStatement ctx (Eval t) = do

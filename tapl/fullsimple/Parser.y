@@ -66,7 +66,7 @@ Topmost :: { [Statement] }
 Statement :: { Statement }
   : Term                   { Eval $1 }
   | 'type' ucid '=' Type   {% do { addName $2; return (BindType $2 $4); } }
-  | 'let' Pattern '=' Term {% do { return (BindLet (fst $2) $4); } }
+  | 'let' LetBinder        {% do { let (pat, t, _) = $2 in return (BindLet pat t); } }
   | 'letrec' LetrecBinder  {% do { let (v, t, ty) = $2 in return (BindLet (PatternVar v) (TermFix (TermAbs v ty t))); } }
 
 Term :: { Term }
@@ -84,21 +84,21 @@ TypedBinder :: { (String, TermType) }
   : lcid ':' Type          {% do { addName $1; return ($1, $3); } }
   | '_' ':' Type           {% do { addName "_"; return ("_", $3); } }
 
-Pattern :: { (Pattern, Int) } -- | The second Int indicates how many new bindings are added to context.
-  : lcid                   {% do { addName $1; return (PatternVar $1, 1); } }
-  | '_'                    {% do { addName "_"; return (PatternVar "_", 1); } }
-  | '{' FieldPatterns '}'  { (PatternRecord (fst $2), snd $2) }
+Pattern :: { Pattern }
+  : lcid                   { PatternVar $1 }
+  | '_'                    { PatternVar "_" }
+  | '{' FieldPatterns '}'  { PatternRecord $2 }
 
-FieldPatterns :: { ([(String, Pattern)], Int) }
-  : FieldPattern           { ([fst $1], snd $1) }
+FieldPatterns :: { [(String, Pattern)] }
+  : FieldPattern           { [$1] }
   | FieldPattern ',' FieldPatterns
-                           { (fst $1 : fst $3, snd $1 + snd $3) }
+                           { ($1 : $3) }
 
-FieldPattern :: { ((String, Pattern), Int) }
-  : Pattern '=' lcid       { (($3, fst $1), snd $1) }
+FieldPattern :: { (String, Pattern) }
+  : Pattern '=' lcid       { ($3, $1) }
 
 LetBinder :: { (Pattern, Term, Int) }
-  : Pattern '=' Term       { (fst $1, $3, snd $1) }
+  : Pattern '=' Term       {% do { count <- addPatternName $1; return ($1, $3, count); } }
 
 LetrecBinder :: { (String, Term, TermType) }
   : TypedBinder '=' Term   { (fst $1, $3, snd $1) }
@@ -152,7 +152,7 @@ AtomicType :: { TermType }
 
 FieldTypes :: { [(String, TermType)] }
   : FieldType              { [$1] }
-  | FieldType ',' FieldTypes  
+  | FieldType ',' FieldTypes
                            { $1 : $3 }
 
 FieldType :: { (String, TermType) }
@@ -163,6 +163,10 @@ FieldType :: { (String, TermType) }
 intToTerm :: Int -> Term
 intToTerm 0 = TermZero
 intToTerm n = TermSucc $ intToTerm (n - 1)
+
+addPatternName :: Pattern -> Parser Int
+addPatternName (PatternVar var) = do { addName var; return 1; }
+addPatternName (PatternRecord pats) = sum <$> forM pats (addPatternName . snd)
 
 type Parser = State Context
 

@@ -1,6 +1,10 @@
-let {{axis1 = value} = z, axis2 = x} = {x = 1, y = 2, z = {value = 3}};
+type Point = {x: Nat, y: Nat, z: {value: Nat}};
+
+let pt = {x = 1, y = 2, z = {value = 3}} as Point;
+
+let {{axis1 = value} = z, axis2 = x} = pt;
 
 axis1;
 axis2;
 
-let {{axis1 = value} = z, axis2 = x} = {x = 1, y = 2, z = {value = 3}} in axis1;
+let {{a = value} = z, b = x} = {x = 1, y = 2, z = {value = 3}} in a;
