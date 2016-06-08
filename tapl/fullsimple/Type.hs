@@ -103,10 +103,23 @@ typeOf ctx (TermProj t field) = case simplifyType ctx (typeOf ctx t) of
                          Nothing -> error $ "type error: field " ++ field ++ " not found"
   _ -> error "type error: expected record type"
 
-typeOf ctx (TermLet var t1 t2) = typeShift (typeOf ctx' t2) (-1)
+typeOf ctx (TermLet pat t1 t2) = typeShift (typeOf ctx' t2) (-1)
   where
     ty1 = typeOf ctx t1
-    ctx' = addBinding ctx var (BindVar ty1)
+    ctxTop = ctx
+    ctx' = walkPattern ctx ty1 pat
+      where
+        walkPattern :: Context -> TermType -> Pattern -> Context
+        walkPattern ctx ty (PatternVar var) = addBinding ctx var (BindVar ty)
+        walkPattern ctx ty (PatternRecord pats) = case simplifyType ctxTop ty of
+          TypeRecord fields -> go ctx pats
+            where
+              go :: Context -> [(String, Pattern)] -> Context
+              go ctx [] = ctx
+              go ctx ((index, pat) : pats) = case find (\(index2, _) -> index == index2) fields of
+                                               Just (_, ty) -> go (walkPattern ctx ty pat) pats
+                                               Nothing -> error $ "type error: field " ++ index ++ " not found in pattern matching"
+          _ -> error "type error: expected record type"
 
 typeOf ctx (TermFix t) = case simplifyType ctx (typeOf ctx t) of
   TypeArrow ty1 ty2 ->

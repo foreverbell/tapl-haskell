@@ -3,6 +3,7 @@ module Base (
 , Binding (..)
 , Context (..)
 , Token (..)
+, Pattern (..)
 , Term (..)
 , TermType (..)
 ) where
@@ -38,6 +39,11 @@ data Token
   | TokenLCurly | TokenRCurly
   deriving (Show)
 
+data Pattern
+  = PatternVar String
+  | PatternRecord [(String, Pattern)]
+  deriving (Show)
+
 data Term
   = TermIfThenElse Term Term Term
   | TermTrue | TermFalse
@@ -46,7 +52,7 @@ data Term
   | TermUnit
   | TermRecord [(String, Term)]
   | TermProj Term String
-  | TermLet String Term Term
+  | TermLet Pattern Term Term
   | TermFix Term
   | TermVar Int
   | TermAbs String TermType Term

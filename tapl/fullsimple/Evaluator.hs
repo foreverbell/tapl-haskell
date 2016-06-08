@@ -109,8 +109,20 @@ evaluate1 ctx (TermProj t f) = do
   t' <- evaluate1 ctx t
   return $ TermProj t' f
 
-evaluate1 _ (TermLet _ v t)
-  | isValue v = Just $ termSubstituteTop t v
+evaluate1 _ (TermLet pat v t)
+  | isValue v = Just $ foldl (\t subt -> termSubstituteTop t subt) t (walkPattern v pat)
+  where
+    walkPattern :: Term -> Pattern -> [Term]
+    walkPattern t (PatternVar _) = [t]
+    walkPattern (TermRecord fields) (PatternRecord pats) = go pats
+      where
+        go :: [(String, Pattern)] -> [Term]
+        go [] = []
+        go ((index, pat) : pats) = case find (\(index2, _) -> index == index2) fields of
+                                     Just (_, t) -> go pats ++ walkPattern t pat
+                                     _ -> undefined
+    walkPattern _ _ = undefined
+
 
 evaluate1 ctx (TermLet var t1 t2) = do
   t1' <- evaluate1 ctx t1

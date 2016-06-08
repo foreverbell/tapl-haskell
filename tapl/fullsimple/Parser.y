@@ -76,17 +76,29 @@ Term :: { Term }
   | 'if' Term 'then' Term 'else' Term
                            { TermIfThenElse $2 $4 $6 }
   | 'let' LetBinder 'in' Term
-                           {% do { dropOneName; let (v, t) = $2 in return (TermLet v t $4); } }
+                           {% do { let (v, t, n) = $2 in (dropNames n >> return (TermLet v t $4)) } }
   | 'letrec' LetrecBinder 'in' Term
-                           {% do { dropOneName; let (v, t, ty) = $2 in return (TermLet v (TermFix (TermAbs v ty t)) $4); } }
+                           {% do { dropOneName; let (v, t, ty) = $2 in return (TermLet (PatternVar v) (TermFix (TermAbs v ty t)) $4); } }
 
 TypedBinder :: { (String, TermType) }
   : lcid ':' Type          {% do { addName $1; return ($1, $3); } }
   | '_' ':' Type           {% do { addName "_"; return ("_", $3); } }
 
-LetBinder :: { (String, Term) }
-  : lcid '=' Term          {% do { addName $1; return ($1, $3); } }
-  | '_' '=' Term           {% do { addName "_"; return ("_", $3); } }
+Pattern :: { (Pattern, Int) } -- | The second Int indicates how many new bindings are added to context.
+  : lcid                   {% do { addName $1; return (PatternVar $1, 1); } }
+  | '_'                    {% do { addName "_"; return (PatternVar "_", 1); } }
+  | '{' FieldPatterns '}'  { (PatternRecord (fst $2), snd $2) }
+
+FieldPatterns :: { ([(String, Pattern)], Int) }
+  : FieldPattern           { ([fst $1], snd $1) }
+  | FieldPattern ',' FieldPatterns
+                           { (fst $1 : fst $3, snd $1 + snd $3) }
+
+FieldPattern :: { ((String, Pattern), Int) }
+  : Pattern '=' lcid       { (($3, fst $1), snd $1) }
+
+LetBinder :: { (Pattern, Term, Int) }
+  : Pattern '=' Term       { (fst $1, $3, snd $1) }
 
 LetrecBinder :: { (String, Term, TermType) }
   : TypedBinder '=' Term   { (fst $1, $3, snd $1) }
@@ -163,6 +175,9 @@ addName :: String -> Parser ()
 addName name = do
   ctx <- get
   put $ C.addName ctx name
+
+dropNames :: Int -> Parser ()
+dropNames n = modify (\ctx -> C.dropBindings ctx n)
 
 dropOneName :: Parser ()
 dropOneName = modify C.dropOneBinding

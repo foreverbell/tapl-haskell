@@ -4,6 +4,7 @@ module Context (
 , indexToBinding
 , addBinding
 , addName
+, dropBindings
 , dropOneBinding
 , pickFreshName
 ) where
@@ -35,8 +36,11 @@ addBinding (Context ctx) name binding = Context ((name, binding) : ctx)
 addName :: Context -> String -> Context
 addName ctx name = addBinding ctx name BindDeBruijn
 
+dropBindings :: Context -> Int -> Context
+dropBindings (Context ctx) n = Context (drop n ctx)
+
 dropOneBinding :: Context -> Context
-dropOneBinding (Context ctx) = Context (tail ctx)
+dropOneBinding ctx = dropBindings ctx 1
 
 pickFreshName :: Context -> String -> (Context, String)
 pickFreshName ctx "_" = (addName ctx "_", "_")

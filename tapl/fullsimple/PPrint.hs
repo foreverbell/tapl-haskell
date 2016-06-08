@@ -17,9 +17,19 @@ pprintTerm ctx (TermAbs var ty t) = printf "lambda %s:%s. %s" fresh (pprintType 
   where
     (ctx', fresh) = pickFreshName ctx var
 pprintTerm ctx (TermIfThenElse t1 t2 t3) = printf "if %s then %s else %s" (pprintTerm ctx t1) (pprintTerm ctx t2) (pprintTerm ctx t3)
-pprintTerm ctx (TermLet var t1 t2) = printf "let %s=%s in %s" fresh (pprintTerm ctx t1) (pprintTerm ctx' t2)
+pprintTerm ctx (TermLet pat t1 t2) = printf "let %s=%s in %s" pp (pprintTerm ctx t1) (pprintTerm ctx' t2)
   where
-    (ctx', fresh) = pickFreshName ctx var
+    (ctx', pp) = pprintPattern ctx pat
+    pprintPattern :: Context -> Pattern -> (Context, String)
+    pprintPattern ctx (PatternVar var) = pickFreshName ctx var
+    pprintPattern ctx (PatternRecord pats) = let (ctx', pp) = go ctx pats in (ctx', printf "{%s}" (tail pp))
+      where
+        go :: Context -> [(String, Pattern)] -> (Context, String)
+        go ctx [] = (ctx, [])
+        go ctx ((index, pat) : pats) = (ctx'', printf ",%s=%s%s" pp index pp')
+          where
+            (ctx', pp) = pprintPattern ctx pat
+            (ctx'', pp') = go ctx' pats
 pprintTerm ctx t = pprintAppTerm ctx t
 
 pprintAppTerm :: Context -> Term -> String
