@@ -115,7 +115,9 @@ evaluate1 ctx (TermRecord fields) = TermRecord <$> go ctx fields
           return ((f,t'):rest)
 
 evaluate1 _ (TermProj v@(TermRecord fields) f)
-  | isValue v = snd <$> find (\(f1, _) -> f1 == f) fields
+  | isValue v = case find (\(f1, _) -> f1 == f) fields of
+                  Just (_, t) -> Just t
+                  Nothing -> undefined
 
 evaluate1 ctx (TermProj t f) = do
   t' <- evaluate1 ctx t

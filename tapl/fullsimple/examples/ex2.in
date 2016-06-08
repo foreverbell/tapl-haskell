@@ -1,14 +1,39 @@
-letrec add:Nat->Nat->Nat =
+letrec plus:Nat->Nat->Nat =
   lambda a:Nat. lambda b:Nat.
     if iszero a
       then b
-      else add (pred a) (succ b);
+      else plus (pred a) (succ b);
 
-letrec fib:Nat->Nat =
+letrec equal:Nat->Nat->Bool =
+  lambda a:Nat. lambda b:Nat.
+    if iszero a
+      then iszero b
+      else if iszero b
+              then false
+              else equal (pred a) (pred b);
+
+letrec times:Nat->Nat->Nat =
+  lambda a:Nat. lambda b:Nat.
+    if iszero a
+      then 0
+      else plus b (times (pred a) b);
+
+letrec factorial:Nat->Nat =
+  lambda n:Nat.
+    if iszero n
+      then 1
+      else times n (factorial (pred n));
+
+equal 10 8;
+equal 5 5;
+
+factorial 5;
+
+letrec fibonacci:Nat->Nat =
   lambda n:Nat.
     if iszero n
       then 1
       else if iszero (pred n)
              then 1
-             else add (fib (pred n)) (fib (pred (pred n)))
-in fib 10;
+             else plus (fibonacci (pred n)) (fibonacci (pred (pred n)))
+in fibonacci 10;
