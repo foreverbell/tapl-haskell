@@ -1,5 +1,6 @@
 module Evaluator (
   evaluate
+, evaluatePattern
 ) where
 
 import Base
@@ -59,6 +60,17 @@ isValue (TermRecord fields) = all (\(_, t) -> isValue t) fields
 isValue (TermAbs _ _ _) = True
 isValue t = isNumericValue t
 
+evaluatePattern :: Term -> Pattern -> [(String, Term)]
+evaluatePattern t (PatternVar var) = [(var, t)]
+evaluatePattern (TermRecord fields) (PatternRecord pats) = go pats
+  where
+    go :: [(String, Pattern)] -> [(String, Term)]
+    go [] = []
+    go ((index, pat) : pats) = case find (\(index2, _) -> index == index2) fields of
+                                 Just (_, t) -> go pats ++ evaluatePattern t pat
+                                 _ -> undefined
+evaluatePattern _ _ = undefined
+
 evaluate1 :: Context -> Term -> Maybe Term
 
 evaluate1 _ (TermIfThenElse TermTrue t1 _) = Just t1
@@ -110,19 +122,7 @@ evaluate1 ctx (TermProj t f) = do
   return $ TermProj t' f
 
 evaluate1 _ (TermLet pat v t)
-  | isValue v = Just $ foldl (\t subt -> termSubstituteTop t subt) t (walkPattern v pat)
-  where
-    walkPattern :: Term -> Pattern -> [Term]
-    walkPattern t (PatternVar _) = [t]
-    walkPattern (TermRecord fields) (PatternRecord pats) = go pats
-      where
-        go :: [(String, Pattern)] -> [Term]
-        go [] = []
-        go ((index, pat) : pats) = case find (\(index2, _) -> index == index2) fields of
-                                     Just (_, t) -> go pats ++ walkPattern t pat
-                                     _ -> undefined
-    walkPattern _ _ = undefined
-
+  | isValue v = Just $ foldl (\t subt -> termSubstituteTop t subt) t (map snd $ evaluatePattern v pat)
 
 evaluate1 ctx (TermLet var t1 t2) = do
   t1' <- evaluate1 ctx t1

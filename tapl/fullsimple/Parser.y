@@ -65,9 +65,9 @@ Topmost :: { [Statement] }
 
 Statement :: { Statement }
   : Term                   { Eval $1 }
-  | 'type' ucid '=' Type   {% do { addName $2; return (Bind $2 (BindTypeAlias $4)); } }
-  | 'let' lcid '=' Term    {% do { addName $2; return (Bind $2 (BindTermAlias $4 Nothing)); } }
-  | 'letrec' LetrecBinder  {% do { let (v, t, ty) = $2 in return (Bind v (BindTermAlias (TermFix (TermAbs v ty t)) Nothing)); } }
+  | 'type' ucid '=' Type   {% do { addName $2; return (BindType $2 $4); } }
+  | 'let' Pattern '=' Term {% do { return (BindLet (fst $2) $4); } }
+  | 'letrec' LetrecBinder  {% do { let (v, t, ty) = $2 in return (BindLet (PatternVar v) (TermFix (TermAbs v ty t))); } }
 
 Term :: { Term }
   : AppTerm                { $1 }

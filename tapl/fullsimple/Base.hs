@@ -10,12 +10,13 @@ module Base (
 
 data Statement
   = Eval Term
-  | Bind String Binding
+  | BindType String TermType
+  | BindLet Pattern Term
   deriving (Show)
 
 data Binding
   = BindVar TermType
-  | BindTermAlias Term (Maybe TermType)
+  | BindTermAlias Term TermType
   | BindTypeAlias TermType
   | BindDeBruijn
   deriving (Show)

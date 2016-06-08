@@ -30,7 +30,7 @@ getBindingType ctx index = typeShift ty (index + 1) -- Shift all type variables 
     ty = case snd (indexToBinding ctx index) of
            BindTypeAlias tyalias -> tyalias
            BindVar tyvar -> tyvar
-           BindTermAlias _ (Just ty) -> ty
+           BindTermAlias _ ty -> ty
            _ -> undefined
 
 -- | Simplify type to the form that the outer most is not TypeVar.

@@ -7,28 +7,32 @@ import Text.Printf (printf)
 
 import Base
 import Context
-import Evaluator (evaluate)
+import Evaluator (evaluate, evaluatePattern)
 import Parser (parseTree)
 import PPrint (pprint, pprintType)
 import Type (typeOf, evaluateType)
 
 executeStatement :: Context -> Statement -> IO Context
-executeStatement ctx (Bind name (BindTypeAlias ty)) = do
+executeStatement ctx (BindType name ty) = do
   let ty' = evaluateType ctx ty
   putStrLn $ pprintType ctx ty'
   return $ addBinding ctx name (BindTypeAlias ty')
 
-executeStatement ctx (Bind name (BindTermAlias t _)) = do
-  let ty = typeOf ctx t
-  let val = evaluate ctx t
-  putStrLn $ pprint ctx val ++ " : " ++ pprintType ctx ty
-  return $ addBinding ctx name (BindTermAlias val (Just ty))
-
-executeStatement _ (Bind _ _) = undefined
+executeStatement ctx (BindLet pat t) = do
+  let tyDummy = typeOf ctx (TermLet pat t (TermUnit)) -- This is HACK to check pattern matching typechecks.
+  let ty = tyDummy `seq` typeOf ctx t
+  let val = ty `seq` evaluate ctx t
+  foldM merge ctx (reverse $ evaluatePattern val pat)
+    where
+      merge ctx (name, t) = do
+        let ty = typeOf ctx t
+        let val = ty `seq` evaluate ctx t
+        putStrLn $ name ++ " = " ++ pprint ctx val ++ " : " ++ pprintType ctx ty
+        return $ addBinding ctx name (BindTermAlias val ty)
 
 executeStatement ctx (Eval t) = do
   let ty = typeOf ctx t
-  let val = evaluate ctx t
+  let val = ty `seq` evaluate ctx t
   putStrLn $ pprint ctx val ++ " : " ++ pprintType ctx ty
   return ctx
 
