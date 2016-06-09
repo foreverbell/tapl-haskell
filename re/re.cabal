@@ -1,9 +1,9 @@
-name:                regex
+name:                re
 version:             0.1.0.0
 author:              foreverbell
 maintainer:          dql.foreverbell@gmail.com
 copyright:           2016 foreverbell
-category:            PLT
+category:            Text
 build-type:          Simple
 cabal-version:       >=1.10
 
@@ -17,8 +17,4 @@ executable main
                      , unordered-containers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:
-    Lexer
-    Parser
-    NFA
-    Types
+  other-modules:       Lexer Parser NFA Types
