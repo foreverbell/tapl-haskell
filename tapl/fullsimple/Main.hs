@@ -1,6 +1,6 @@
 module Main where
 
-import Control.Monad (forever, foldM, void)
+import Control.Monad (foldM, foldM_, void)
 import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
 import Text.Printf (printf)
@@ -36,8 +36,8 @@ executeStatement ctx (Eval t) = do
   putStrLn $ pprint ctx val ++ " : " ++ pprintType ctx ty
   return ctx
 
-run :: String -> IO ()
-run str = void $ foldM executeStatement makeEmptyContext (parseTree str)
+run :: Context -> String -> IO Context
+run ctx str = foldM executeStatement ctx (parseTree ctx str)
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName
@@ -48,9 +48,11 @@ main = do
   case args of
     [] -> do
       usage
-      forever $ do
-        putStr "fullsimple> "
-        hFlush stdout
-        run =<< getLine
-    [sourceFile] -> run =<< readFile sourceFile
+      foldM_ loop makeEmptyContext [1 .. ]
+        where
+          loop ctx _ = do
+            putStr "fullsimple> "
+            hFlush stdout
+            run ctx =<< getLine
+    [sourceFile] -> void . run makeEmptyContext =<< readFile sourceFile
     _ -> usage

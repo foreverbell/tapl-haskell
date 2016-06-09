@@ -186,9 +186,8 @@ dropNames n = modify (\ctx -> C.dropBindings ctx n)
 dropOneName :: Parser ()
 dropOneName = modify C.dropOneBinding
 
-parseTree :: String -> [Statement]
-parseTree str = evalState (parse tokens) C.makeEmptyContext
-  where tokens = scanTokens str
+parseTree :: Context -> String -> [Statement]
+parseTree ctx str = evalState (parse (scanTokens str)) ctx
 
 parseError :: [Token] -> a
 parseError _ = error "parse error"
