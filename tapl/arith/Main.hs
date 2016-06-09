@@ -1,5 +1,6 @@
 module Main where
 
+import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
 import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
@@ -12,7 +13,7 @@ import PPrint (pprint)
 run :: String -> IO ()
 run str = do
   let term = parseTree str
-  let val = term `seq` evaluate term
+  let val = term `deepseq` evaluate term
   putStrLn $ pprint val
 
 usage :: IO ()

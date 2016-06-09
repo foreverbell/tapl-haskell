@@ -1,7 +1,12 @@
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+
 module Base (
   Token (..)
 , Term (..)
 ) where
+
+import GHC.Generics (Generic)
+import Control.DeepSeq (NFData)
 
 data Token
   = TokenInt Int
@@ -16,4 +21,4 @@ data Term
   | TermIsZero Term
   | TermIfThenElse Term Term Term
   | TermSucc Term | TermPred Term
-  deriving (Show)
+  deriving (Show, Generic, NFData)

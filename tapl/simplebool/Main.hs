@@ -1,5 +1,6 @@
 module Main where
 
+import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
 import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
@@ -13,8 +14,8 @@ import Type (typeOf)
 run :: String -> IO ()
 run str = do
   let term = parseTree str
-  let ttype = term `seq` typeOf term
-  let val = ttype `seq` evaluate term
+  let ttype = term `deepseq` typeOf term
+  let val = ttype `deepseq` evaluate term
   putStrLn $ pprint val ++ " : " ++ pprintType ttype
 
 usage :: IO ()

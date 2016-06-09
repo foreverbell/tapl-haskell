@@ -1,9 +1,14 @@
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+
 module Base (
   Context (..)
 , Token (..)
 , Term (..)
 , TermType (..)
 ) where
+
+import GHC.Generics (Generic)
+import Control.DeepSeq (NFData)
 
 newtype Context = Context [(String, TermType)]
   deriving (Show)
@@ -15,7 +20,7 @@ data Token
   | TokenColon
   | TokenLambda | TokenVar String | TokenDot
   | TokenLBracket | TokenRBracket
-  deriving (Show)
+  deriving (Show, Generic, NFData)
 
 data Term
   = TermIfThenElse Term Term Term
@@ -23,9 +28,9 @@ data Term
   | TermVar Int
   | TermAbs String TermType Term
   | TermApp Term Term
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic, NFData)
 
 data TermType
   = TypeBool
   | TypeArrow TermType TermType
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic, NFData)

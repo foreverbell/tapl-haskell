@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+
 module Base (
   Statement (..)
 , Binding (..)
@@ -8,11 +10,14 @@ module Base (
 , TermType (..)
 ) where
 
+import GHC.Generics (Generic)
+import Control.DeepSeq (NFData)
+
 data Statement
   = Eval Term
   | BindType String TermType
   | BindLet Pattern Term
-  deriving (Show)
+  deriving (Show, Generic, NFData)
 
 data Binding
   = BindVar TermType
@@ -38,12 +43,12 @@ data Token
   | TokenLT | TokenGT
   | TokenLParen | TokenRParen
   | TokenLCurly | TokenRCurly
-  deriving (Show)
+  deriving (Show, Generic, NFData)
 
 data Pattern
   = PatternVar String
   | PatternRecord [(String, Pattern)]
-  deriving (Show)
+  deriving (Show, Generic, NFData)
 
 data Term
   = TermIfThenElse Term Term Term
@@ -59,7 +64,7 @@ data Term
   | TermAbs String TermType Term
   | TermApp Term Term
   | TermAscribe Term TermType
-  deriving (Show)
+  deriving (Show, Generic, NFData)
 
 data TermType
   = TypeBool
@@ -68,4 +73,4 @@ data TermType
   | TypeRecord [(String, TermType)]
   | TypeArrow TermType TermType
   | TypeVar Int -- ^ user-defined alias
-  deriving (Show)
+  deriving (Show, Generic, NFData)

@@ -19,7 +19,7 @@ executable arith
   hs-source-dirs:      arith
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Evaluator Lexer Parser PPrint
@@ -28,7 +28,7 @@ executable untyped
   hs-source-dirs:      untyped
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Context Evaluator Lexer Parser PPrint
@@ -37,7 +37,7 @@ executable tyarith
   hs-source-dirs:      tyarith
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Evaluator Lexer Parser PPrint Type
@@ -46,7 +46,7 @@ executable simplebool
   hs-source-dirs:      simplebool
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Context Evaluator Lexer Parser PPrint Type
@@ -55,7 +55,7 @@ executable fullsimple
   hs-source-dirs:      fullsimple
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array, unordered-containers, mtl, transformers
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Context Evaluator Lexer Parser PPrint Type
