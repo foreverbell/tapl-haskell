@@ -1,11 +1,11 @@
 letrec plus:Nat->Nat->Nat =
-  lambda a:Nat. lambda b:Nat.
+  lambda a:Nat b:Nat.
     if iszero a
       then b
       else plus (pred a) (succ b);
 
 letrec equal:Nat->Nat->Bool =
-  lambda a:Nat. lambda b:Nat.
+  lambda a:Nat b:Nat.
     if iszero a
       then iszero b
       else if iszero b
@@ -13,7 +13,7 @@ letrec equal:Nat->Nat->Bool =
               else equal (pred a) (pred b);
 
 letrec times:Nat->Nat->Nat =
-  lambda a:Nat. lambda b:Nat.
+  lambda a:Nat b:Nat.
     if iszero a
       then 0
       else plus b (times (pred a) b);

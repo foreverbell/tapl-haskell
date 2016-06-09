@@ -71,14 +71,19 @@ Statement :: { Statement }
 
 Term :: { Term }
   : AppTerm                { $1 }
-  | 'lambda' TypedBinder '.' Term
-                           {% do { dropOneName; let (v, ty) = $2 in return (TermAbs v ty $4); } }
+  | 'lambda' TypedBinders '.' Term
+                           {% let bs = $2 in do { dropNames (length bs); stackBinders $4 bs; } }
   | 'if' Term 'then' Term 'else' Term
                            { TermIfThenElse $2 $4 $6 }
   | 'let' LetBinder 'in' Term
-                           {% do { let (v, t, n) = $2 in (dropNames n >> return (TermLet v t $4)) } }
+                           {% let (v, t, n) = $2 in do { dropNames n; return (TermLet v t $4); } }
   | 'letrec' LetrecBinder 'in' Term
                            {% do { dropOneName; let (v, t, ty) = $2 in return (TermLet (PatternVar v) (TermFix (TermAbs v ty t)) $4); } }
+
+TypedBinders :: { [(String, TermType)] }
+  : TypedBinder            { [$1] }
+  | TypedBinder TypedBinders
+                           { $1 : $2 }
 
 TypedBinder :: { (String, TermType) }
   : lcid ':' Type          {% do { addName $1; return ($1, $3); } }
@@ -167,6 +172,12 @@ intToTerm n = TermSucc $ intToTerm (n - 1)
 addPatternName :: Pattern -> Parser Int
 addPatternName (PatternVar var) = do { addName var; return 1; }
 addPatternName (PatternRecord pats) = sum <$> forM pats (addPatternName . snd)
+
+stackBinders :: Term -> [(String, TermType)] -> Parser Term
+stackBinders t bs = go bs
+  where
+    go [] = return t
+    go ((var, ty) : bs) = TermAbs var ty <$> go bs
 
 type Parser = State Context
 
