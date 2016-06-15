@@ -4,8 +4,8 @@ module Parser (
   parseTree
 ) where
 
+import Base
 import Lexer (scanTokens)
-import Types
 
 }
 

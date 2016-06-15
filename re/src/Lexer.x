@@ -11,7 +11,7 @@ import Data.Bits (shiftR, (.&.))
 import Data.Char (ord)
 import Data.Word (Word8)
 
-import Types
+import Base
 
 }
 
@@ -68,13 +68,11 @@ utf8Encode = map fromIntegral . go . ord
                       , 0x80 + oc .&. 0x3f
                       ]
 
-type AlexInput = (Char,     -- previous char
-                  [Word8],  -- pending bytes on current char
-                  String)   -- current input string
+type AlexInput = (Char, [Word8], String)
 
 data AlexState = AlexState {
   alexInput :: AlexInput
-, alexScd   :: [Int]        -- the current startcode
+, alexScd   :: [Int]
 }
 
 newtype Alex a = Alex { unAlex :: AlexState -> Either String (AlexState, a) }
@@ -105,7 +103,7 @@ alexGetByte (_, [], (c:s)) = let (b:bs) = utf8Encode c
                               in Just (b, (c, bs, s))
 
 alexGetInput :: Alex AlexInput
-alexGetInput = Alex $ \s@AlexState{..} -> Right (s, alexInput)
+alexGetInput = Alex $ \s@AlexState {..} -> Right (s, alexInput)
 
 alexSetInput :: AlexInput -> Alex ()
 alexSetInput input = Alex $ \s -> Right (s { alexInput = input }, ())
@@ -114,13 +112,13 @@ alexError :: Alex a
 alexError = Alex $ \_ -> Left "lexical error"
 
 alexGetStartCode :: Alex [Int]
-alexGetStartCode = Alex $ \s@AlexState{..} -> Right (s, alexScd)
+alexGetStartCode = Alex $ \s@AlexState {..} -> Right (s, alexScd)
 
 alexPushStartCode :: Int -> Alex ()
-alexPushStartCode sc = Alex $ \s@AlexState{..} -> Right (s { alexScd = sc:alexScd }, ())
+alexPushStartCode sc = Alex $ \s@AlexState {..} -> Right (s { alexScd = sc:alexScd }, ())
 
 alexPopStartCode :: Alex ()
-alexPopStartCode = Alex $ \s@AlexState{..} -> Right (s { alexScd = tail alexScd }, ())
+alexPopStartCode = Alex $ \s@AlexState {..} -> Right (s { alexScd = tail alexScd }, ())
 
 runAlex :: AlexState -> Alex a -> Either String (AlexState, a)
 runAlex s (Alex f) = f s

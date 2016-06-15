@@ -5,17 +5,23 @@ import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
 import Text.Printf (printf)
 
-import Parser (parseTree)
-import NFA (build, accept)
+import           Parser (parseTree)
+import qualified NFA as NFA
+import qualified VM as VM
 
 run :: String -> String -> IO ()
 run regex text = do
-  let val = do
-        nfa <- build <$> parseTree regex
-        return $ accept nfa text
-  case val of
+  case parseTree regex of
     Left err -> putStrLn err
-    Right val -> print val
+    Right ast -> do
+      let program = VM.compile ast
+      let nfa = NFA.build ast
+      putStrLn "Program:"
+      putStrLn $ unlines $ map (uncurry showLine) $ zip [1 :: Int .. ] (VM.pprint program)
+      putStrLn "\n"
+      putStrLn $ "VM result: " ++ show (VM.accept program text)
+      putStrLn $ "NFA result: " ++ show (NFA.accept nfa text)
+  where showLine l p = printf " % 3d " l ++ p
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName

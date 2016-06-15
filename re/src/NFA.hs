@@ -1,13 +1,31 @@
-module NFA ( 
+module NFA (
   build
 , accept
+, NFA
 ) where
 
-import           Data.List (group, sort)
 import           Data.Maybe (fromJust, isJust)
 import qualified Data.Sequence as Seq
 import qualified Data.Set as Set
-import           Types
+
+import           Base
+
+data TransitionRule
+  = TransEpsilon
+  | TransAny
+  | TransChar Char
+  | TransPositive [TransitionRule]
+  | TransNegative [TransitionRule]
+  | TransRange Char Char
+  deriving (Show)
+
+type Edge a = (Int, a)
+
+newtype NFA = NFA (Seq.Seq [Edge TransitionRule])
+  deriving (Show)
+
+unNFA :: NFA -> (Seq.Seq [Edge TransitionRule], Int)
+unNFA (NFA nfa) = (nfa, Seq.length nfa)
 
 itranslate :: SetItem -> TransitionRule
 itranslate (ItemChar c) = TransChar c
@@ -20,7 +38,7 @@ addEdge :: (Int, Edge a) -> Seq.Seq [Edge a] -> Seq.Seq [Edge a]
 addEdge (u, e) g = Seq.adjust (e:) u g
 
 emptyNode :: Seq.Seq [Edge a]
-emptyNode = Seq.singleton [ ]
+emptyNode = Seq.singleton []
 
 symbol :: TransitionRule -> NFA
 symbol rule = NFA $ Seq.fromList [ [(1, rule)] , [] ]
@@ -73,35 +91,29 @@ build (REKleenePlus sub) = kleenePlus (build sub)
 build (REKleeneStar sub) = kleeneStar (build sub)
 
 accept :: NFA -> String -> Bool
-accept nfa x = go x (epsClosure [0])
+accept nfa x = go x (closure [0])
   where
     (g, n) = unNFA nfa
 
     go :: String -> [Int] -> Bool
     go [] xs = (n-1) `elem` xs
-    go (c:cs) xs = go cs (epsClosure (move xs c))
-
-    nub' :: (Ord a, Eq a) => [a] -> [a]
-    nub' = map head . group . sort
-
-    move1 :: Edge TransitionRule -> Char -> Maybe Int
-    move1 (u, t) c = if translate t c then Just u else Nothing
-      where
-        translate TransEpsilon = const False -- expecting this transition *consuming* a character.
-        translate TransAny = const True
-        translate (TransChar ch) = (==) ch
-        translate (TransPositive rules) = \ch -> any (($ ch) . translate) rules
-        translate (TransNegative rules) = \ch -> not $ any (($ ch) . translate) rules
-        translate (TransRange c1 c2) = \ch -> ch >= c1 && ch <= c2
+    go (c:cs) xs = go cs (closure (move xs c))
 
     move :: [Int] -> Char -> [Int]
-    move xs c = nub' $ concat $ do
-      x <- xs
-      let ys = map fromJust $ filter isJust $ map (`move1` c) (Seq.index g x)
-      return ys
+    move xs c = nub' $ concat [ map fromJust $ filter isJust $ map (`move1` c) (Seq.index g x) | x <- xs ]
+      where
+        move1 :: Edge TransitionRule -> Char -> Maybe Int
+        move1 (u, t) c = if translate t c then Just u else Nothing
+          where
+            translate TransEpsilon = const False -- expecting this transition *consuming* a character.
+            translate TransAny = const True
+            translate (TransChar ch) = (==) ch
+            translate (TransPositive rules) = \ch -> any (($ ch) . translate) rules
+            translate (TransNegative rules) = \ch -> not $ any (($ ch) . translate) rules
+            translate (TransRange c1 c2) = \ch -> ch >= c1 && ch <= c2
 
-    epsClosure :: [Int] -> [Int]
-    epsClosure xs = Set.toList $ foldr expand Set.empty xs
+    closure :: [Int] -> [Int]
+    closure xs = Set.toList $ foldr expand Set.empty xs
       where
         expand :: Int -> Set.Set Int -> Set.Set Int
         expand x s
