@@ -38,9 +38,7 @@ pprintAppTerm ctx (TermFix t) = printf "fix %s" (pprintAppTerm ctx t)
 pprintAppTerm ctx t0@(TermSucc t) = case pprintNat t0 of
   Just p -> p
   Nothing -> printf "succ %s" (pprintPathTerm ctx t)
-pprintAppTerm ctx t0@(TermPred t) = case pprintNat t0 of
-  Just p -> p
-  Nothing -> printf "pred %s" (pprintPathTerm ctx t)
+pprintAppTerm ctx t0@(TermPred t) = printf "pred %s" (pprintPathTerm ctx t)
 pprintAppTerm ctx (TermIsZero t) = printf "iszero %s" (pprintPathTerm ctx t)
 pprintAppTerm ctx (TermCons t1 t2) = printf "cons %s %s" (pprintPathTerm ctx t1) (pprintPathTerm ctx t2)
 pprintAppTerm ctx (TermIsNil t) = printf "isnil %s" (pprintPathTerm ctx t)
