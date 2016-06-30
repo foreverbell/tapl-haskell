@@ -48,9 +48,7 @@ evaluate1 (TermIfThenElse TermTrue t1 _) = Just t1
 evaluate1 (TermIfThenElse TermFalse _ t2) = Just t2
 
 {- E-If -}
-evaluate1 (TermIfThenElse t t1 t2) = do
-  t' <- evaluate1 t
-  return $ TermIfThenElse t' t1 t2
+evaluate1 (TermIfThenElse t t1 t2) = TermIfThenElse <$> evaluate1 t <*> pure t1 <*> pure t2
 
 {- E-AppAbs -}
 evaluate1 (TermApp (TermAbs _ _ t) v)
@@ -58,14 +56,10 @@ evaluate1 (TermApp (TermAbs _ _ t) v)
 
 {- E-App2 -}
 evaluate1 (TermApp v t)
-  | isValue v = do
-      t' <- evaluate1 t
-      return $ TermApp v t'
+  | isValue v = TermApp v <$> evaluate1 t
 
 {- E-App1 -}
-evaluate1 (TermApp t1 t2) = do
-  t1' <- evaluate1 t1
-  return $ TermApp t1' t2
+evaluate1 (TermApp t1 t2) = TermApp <$> evaluate1 t1 <*> pure t2
 
 {- E-NoRule -}
 evaluate1 _ = Nothing

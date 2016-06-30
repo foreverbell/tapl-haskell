@@ -83,31 +83,23 @@ evaluate1 _ (TermIfThenElse TermTrue t1 _) = Just t1
 
 evaluate1 _ (TermIfThenElse TermFalse _ t2) = Just t2
 
-evaluate1 ctx (TermIfThenElse t t1 t2) = do
-  t' <- evaluate1 ctx t
-  return $ TermIfThenElse t' t1 t2
+evaluate1 ctx (TermIfThenElse t t1 t2) = TermIfThenElse <$> evaluate1 ctx t <*> pure t1 <*> pure t2
 
-evaluate1 ctx (TermSucc t) = do
-  t' <- evaluate1 ctx t
-  return $ TermSucc t'
+evaluate1 ctx (TermSucc t) = TermSucc <$> evaluate1 ctx t
 
 evaluate1 _ (TermPred TermZero) = Just TermZero
 
 evaluate1 _ (TermPred (TermSucc nv))
   | isNumericValue nv = Just nv
 
-evaluate1 ctx (TermPred t) = do
-  t' <- evaluate1 ctx t
-  return $ TermPred t'
+evaluate1 ctx (TermPred t) = TermPred <$> evaluate1 ctx t
 
 evaluate1 _ (TermIsZero TermZero) = Just TermTrue
 
 evaluate1 _ (TermIsZero (TermSucc nv))
   | isNumericValue nv = Just TermFalse
 
-evaluate1 ctx (TermIsZero t) = do
-  t' <- evaluate1 ctx t
-  return $ TermIsZero t'
+evaluate1 ctx (TermIsZero t) = TermIsZero <$> evaluate1 ctx t
 
 evaluate1 ctx (TermCons v1 t2)
   | isValue v1 = TermCons v1 <$> evaluate1 ctx t2
@@ -151,22 +143,16 @@ evaluate1 _ (TermProj v@(TermRecord fields) f)
                   Just (_, t) -> Just t
                   Nothing -> undefined
 
-evaluate1 ctx (TermProj t f) = do
-  t' <- evaluate1 ctx t
-  return $ TermProj t' f
+evaluate1 ctx (TermProj t f) = TermProj <$> evaluate1 ctx t <*> pure f
 
 evaluate1 _ (TermLet pat v t)
   | isValue v = Just $ foldl (\t subt -> termSubstituteTop t subt) t (map snd $ evaluatePattern v pat)
 
-evaluate1 ctx (TermLet var t1 t2) = do
-  t1' <- evaluate1 ctx t1
-  return $ TermLet var t1' t2
+evaluate1 ctx (TermLet var t1 t2) = TermLet var <$> evaluate1 ctx t1 <*> pure t2
 
 evaluate1 _ t1@(TermFix (TermAbs _ _ t2)) = Just $ termSubstituteTop t2 t1
 
-evaluate1 ctx (TermFix t) = do
-  t' <- evaluate1 ctx t
-  return $ TermFix t'
+evaluate1 ctx (TermFix t) = TermFix <$> evaluate1 ctx t
 
 evaluate1 ctx (TermVar var) = Just $ getBindingTerm ctx var
 
@@ -174,20 +160,14 @@ evaluate1 _ (TermApp (TermAbs _ _ t) v)
   | isValue v = Just $ termSubstituteTop t v
 
 evaluate1 ctx (TermApp v t)
-  | isValue v = do
-      t' <- evaluate1 ctx t
-      return $ TermApp v t'
+  | isValue v = TermApp v <$> evaluate1 ctx t
 
-evaluate1 ctx (TermApp t1 t2) = do
-  t1' <- evaluate1 ctx t1
-  return $ TermApp t1' t2
+evaluate1 ctx (TermApp t1 t2) = TermApp <$> evaluate1 ctx t1 <*> pure t2
 
 evaluate1 _ (TermAscribe v _)
   | isValue v = Just v
 
-evaluate1 ctx (TermAscribe t ty) = do
-  t' <- evaluate1 ctx t
-  return $ TermAscribe t' ty
+evaluate1 ctx (TermAscribe t ty) = TermAscribe <$> evaluate1 ctx t <*> pure ty
 
 evaluate1 _ _ = Nothing
 

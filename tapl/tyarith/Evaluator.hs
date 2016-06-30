@@ -19,14 +19,10 @@ evaluate1 (TermIfThenElse TermTrue t1 _) = Just t1
 evaluate1 (TermIfThenElse TermFalse _ t2) = Just t2
 
 {- E-If -}
-evaluate1 (TermIfThenElse t t1 t2) = do
-  t' <- evaluate1 t
-  return $ TermIfThenElse t' t1 t2
+evaluate1 (TermIfThenElse t t1 t2) = TermIfThenElse <$> evaluate1 t <*> pure t1 <*> pure t2
 
 {- E-Succ -}
-evaluate1 (TermSucc t) = do
-  t' <- evaluate1 t
-  return $ TermSucc t'
+evaluate1 (TermSucc t) = TermSucc <$> evaluate1 t
 
 {- E-PredZero -}
 evaluate1 (TermPred TermZero) = Just TermZero
@@ -36,9 +32,7 @@ evaluate1 (TermPred (TermSucc nv))
   | isNumericValue nv = Just nv
 
 {- E-Pred -}
-evaluate1 (TermPred t) = do
-  t' <- evaluate1 t
-  return $ TermPred t'
+evaluate1 (TermPred t) = TermPred <$> evaluate1 t
 
 {- E-IsZeroZero -}
 evaluate1 (TermIsZero TermZero) = Just TermTrue
@@ -48,9 +42,7 @@ evaluate1 (TermIsZero (TermSucc nv))
   | isNumericValue nv = Just TermFalse
 
 {- E-IsZero -}
-evaluate1 (TermIsZero t) = do
-  t' <- evaluate1 t
-  return $ TermIsZero t'
+evaluate1 (TermIsZero t) = TermIsZero <$> evaluate1 t
 
 {- E-NoRule -}
 evaluate1 _ = Nothing

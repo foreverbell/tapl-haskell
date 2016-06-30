@@ -40,14 +40,10 @@ evaluate1 (TermApp (TermAbs _ t) v)
 
 {- E-App2 -}
 evaluate1 (TermApp v t)
-  | isValue v = do
-      t' <- evaluate1 t
-      return $ TermApp v t'
+  | isValue v = TermApp v <$> evaluate1 t
 
 {- E-App1 -}
-evaluate1 (TermApp t1 t2) = do
-  t1' <- evaluate1 t1
-  return $ TermApp t1' t2
+evaluate1 (TermApp t1 t2) = TermApp <$> evaluate1 t1 <*> pure t2
 
 {- E-NoRule -}
 evaluate1 _ = Nothing

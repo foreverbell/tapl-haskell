@@ -5,11 +5,12 @@ let l = (cons 1 (cons 2 (cons 3 nil[Nat])));
 head l;
 head (tail l);
 head (tail (tail l));
-head (tail (tail (tail l)));
 
-letrec gen:Nat->List[Nat] = lambda x:Nat. if iszero x
-  then nil[Nat]
-  else cons x (gen (pred x));
+letrec gen:Nat->List[Nat] = 
+  lambda x:Nat. 
+    if iszero x
+      then nil[Nat]
+      else cons x (gen (pred x));
 
 let l0 = gen 0;
 let l2 = gen 2;
@@ -19,3 +20,17 @@ isnil l2;
 
 gen 5;
 head (tail (gen 10));
+
+letrec plus:Nat->Nat->Nat =
+  lambda a:Nat b:Nat.
+    if iszero a
+      then b
+      else plus (pred a) (succ b);
+
+letrec sum:List[Nat]->Nat = 
+  lambda l:List[Nat].
+    if isnil l
+      then 0
+      else plus (head l) (sum (tail l));
+
+sum (gen 50);
