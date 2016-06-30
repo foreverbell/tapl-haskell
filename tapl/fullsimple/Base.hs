@@ -35,13 +35,16 @@ data Token
   | TokenIf | TokenThen | TokenElse
   | TokenSucc | TokenPred | TokenIsZero
   | TokenTrue | TokenFalse | TokenZero
+  | TokenNil | TokenCons
+  | TokenIsNil | TokenHead | TokenTail
   | TokenUnit
-  | TokenBool | TokenNat | TokenUUnit
+  | TokenBool | TokenNat | TokenList | TokenUUnit
   | TokenLambda | TokenLet | TokenIn | TokenLetrec | TokenTypeAlias | TokenAs
   | TokenArrow
   | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenUScore
   | TokenLParen | TokenRParen
   | TokenLCurly | TokenRCurly
+  | TokenLBracket | TokenRBracket
   deriving (Show, Generic, NFData)
 
 data Pattern
@@ -54,6 +57,8 @@ data Term
   | TermTrue | TermFalse
   | TermSucc Term | TermPred Term | TermIsZero Term
   | TermZero
+  | TermNil TermType | TermCons Term Term
+  | TermIsNil Term | TermHead Term | TermTail Term
   | TermUnit
   | TermRecord [(String, Term)]
   | TermProj Term String
@@ -68,6 +73,7 @@ data Term
 data TermType
   = TypeBool
   | TypeNat
+  | TypeList TermType
   | TypeUnit
   | TypeRecord [(String, TermType)]
   | TypeArrow TermType TermType

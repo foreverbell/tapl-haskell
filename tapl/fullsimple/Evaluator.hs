@@ -18,6 +18,11 @@ termMap onvar t = go 0 t
     go index (TermPred t) = TermPred (go index t)
     go index (TermIsZero t) = TermIsZero (go index t)
     go _ TermZero = TermZero
+    go _ (TermNil ty) = TermNil ty
+    go index (TermCons t1 t2) = TermCons (go index t1) (go index t2)
+    go index (TermIsNil t) = TermIsNil (go index t)
+    go index (TermHead t) = TermHead (go index t)
+    go index (TermTail t) = TermTail (go index t)
     go _ TermUnit = TermUnit
     go index (TermRecord fields) = TermRecord (map (\(f, t) -> (f, go index t)) fields)
     go index (TermProj t field) = TermProj (go index t) field
@@ -48,13 +53,14 @@ getBindingTerm ctx index = termShift t (index + 1) -- Shift all term variables t
 
 isNumericValue :: Term -> Bool
 isNumericValue TermZero = True
-isNumericValue (TermPred t) = isNumericValue t
 isNumericValue (TermSucc t) = isNumericValue t
 isNumericValue _ = False
 
 isValue :: Term -> Bool
 isValue TermTrue = True
 isValue TermFalse = True
+isValue (TermNil _) = True
+isValue (TermCons t1 t2) = isValue t1 && isValue t2
 isValue TermUnit = True
 isValue (TermRecord fields) = all (\(_, t) -> isValue t) fields
 isValue (TermAbs _ _ _) = True
@@ -102,6 +108,32 @@ evaluate1 _ (TermIsZero (TermSucc nv))
 evaluate1 ctx (TermIsZero t) = do
   t' <- evaluate1 ctx t
   return $ TermIsZero t'
+
+evaluate1 ctx (TermCons v1 t2)
+  | isValue v1 = TermCons v1 <$> evaluate1 ctx t2
+
+evaluate1 ctx (TermCons t1 t2) = TermCons <$> evaluate1 ctx t1 <*> pure t2
+
+evaluate1 _ (TermIsNil (TermNil _)) = Just TermTrue
+
+evaluate1 _ (TermIsNil (TermCons v1 v2))
+  | isValue v1 && isValue v2 = Just TermFalse
+
+evaluate1 ctx (TermIsNil t) = TermIsNil <$> evaluate1 ctx t
+
+evaluate1 _ (TermHead (TermNil _)) = error "evaluation error: head of empty list"
+
+evaluate1 _ (TermHead (TermCons v1 v2))
+  | isValue v1 && isValue v2 = Just v1
+
+evaluate1 ctx (TermHead t) = TermHead <$> evaluate1 ctx t
+
+evaluate1 _ (TermTail (TermNil _)) = error "evaluation error: tail of empty list"
+
+evaluate1 _ (TermTail (TermCons v1 v2))
+  | isValue v1 && isValue v2 = Just v2
+
+evaluate1 ctx (TermTail t) = TermTail <$> evaluate1 ctx t
 
 evaluate1 ctx (TermRecord fields) = TermRecord <$> go ctx fields
   where

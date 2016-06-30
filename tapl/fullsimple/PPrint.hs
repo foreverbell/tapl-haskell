@@ -42,6 +42,10 @@ pprintAppTerm ctx t0@(TermPred t) = case pprintNat t0 of
   Just p -> p
   Nothing -> printf "pred %s" (pprintPathTerm ctx t)
 pprintAppTerm ctx (TermIsZero t) = printf "iszero %s" (pprintPathTerm ctx t)
+pprintAppTerm ctx (TermCons t1 t2) = printf "cons %s %s" (pprintPathTerm ctx t1) (pprintPathTerm ctx t2)
+pprintAppTerm ctx (TermIsNil t) = printf "isnil %s" (pprintPathTerm ctx t)
+pprintAppTerm ctx (TermHead t) = printf "head %s" (pprintPathTerm ctx t)
+pprintAppTerm ctx (TermTail t) = printf "tail %s" (pprintPathTerm ctx t)
 pprintAppTerm ctx t = pprintPathTerm ctx t
 
 pprintPathTerm :: Context -> Term -> String
@@ -56,6 +60,7 @@ pprintAtomicTerm :: Context -> Term -> String
 pprintAtomicTerm _ TermTrue = "true"
 pprintAtomicTerm _ TermFalse = "false"
 pprintAtomicTerm _ TermZero = "0"
+pprintAtomicTerm ctx (TermNil ty) = printf "nil[%s]" (pprintType ctx ty)
 pprintAtomicTerm _ TermUnit = "unit"
 pprintAtomicTerm ctx (TermRecord fields) = printf "{%s}" (pprintFields ctx fields)
 pprintAtomicTerm ctx (TermVar var) = fst $ indexToBinding ctx var
@@ -74,6 +79,7 @@ pprintArrowType ctx ty = pprintAtomicType ctx ty
 pprintAtomicType :: Context -> TermType -> String
 pprintAtomicType _ TypeBool = "Bool"
 pprintAtomicType _ TypeNat = "Nat"
+pprintAtomicType ctx (TypeList ty) = printf "List[%s]" (pprintType ctx ty)
 pprintAtomicType _ TypeUnit = "Unit"
 pprintAtomicType ctx (TypeRecord fields) = printf "{%s}" (pprintFieldTypes ctx fields)
 pprintAtomicType ctx (TypeVar var) = fst $ indexToBinding ctx var

@@ -28,6 +28,8 @@ import           Base
   ')'      { TokenRParen }
   '{'      { TokenLCurly }
   '}'      { TokenRCurly }
+  '['      { TokenLBracket }
+  ']'      { TokenRBracket }
   '->'     { TokenArrow }
   int      { TokenInt $$ }
   lcid     { TokenLCaseId $$ }
@@ -40,6 +42,11 @@ import           Base
   'pred'   { TokenPred }
   'succ'   { TokenSucc }
   'iszero' { TokenIsZero }
+  'nil'    { TokenNil }
+  'cons'   { TokenCons }
+  'isnil'  { TokenIsNil }
+  'head'   { TokenHead }
+  'tail'   { TokenTail }
   'unit'   { TokenUnit }
   'lambda' { TokenLambda }
   'let'    { TokenLet }
@@ -49,6 +56,7 @@ import           Base
   'as'     { TokenAs }
   'Bool'   { TokenBool }
   'Nat'    { TokenNat }
+  'List'   { TokenList }
   'Unit'   { TokenUUnit }
 
 %%
@@ -108,6 +116,11 @@ AppTerm :: { Term }
   | 'succ' PathTerm        { TermSucc $2 }
   | 'pred' PathTerm        { TermPred $2 }
   | 'iszero' PathTerm      { TermIsZero $2 }
+  | 'cons' PathTerm PathTerm
+                           { TermCons $2 $3 }
+  | 'isnil' PathTerm       { TermIsNil $2 }
+  | 'head' PathTerm        { TermHead $2 }
+  | 'tail' PathTerm        { TermTail $2 }
 
 PathTerm :: { Term }
   : PathTerm '.' lcid      { TermProj $1 $3 }
@@ -122,6 +135,7 @@ AtomicTerm :: { Term }
   | 'true'                 { TermTrue }
   | 'false'                { TermFalse }
   | int                    { intToTerm $1 }
+  | 'nil' '[' Type ']'     { TermNil $3 }
   | 'unit'                 { TermUnit }
   | '{' Fields '}'         { TermRecord $2 }
   | lcid                   {% do { index <- nameToIndex $1; return (TermVar index); } }
@@ -145,6 +159,7 @@ AtomicType :: { TermType }
   : '(' Type ')'           { $2 }
   | 'Bool'                 { TypeBool }
   | 'Nat'                  { TypeNat }
+  | 'List' '[' Type ']'    { TypeList $3 }
   | 'Unit'                 { TypeUnit }
   | '{' FieldTypes '}'     { TypeRecord $2 }
   | ucid                   {% do { index <- nameToIndex $1; return (TypeVar index); } }

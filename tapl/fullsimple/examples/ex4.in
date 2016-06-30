@@ -1,0 +1,21 @@
+nil[Nat];
+
+let l = (cons 1 (cons 2 (cons 3 nil[Nat])));
+
+head l;
+head (tail l);
+head (tail (tail l));
+head (tail (tail (tail l)));
+
+letrec gen:Nat->List[Nat] = lambda x:Nat. if iszero x
+  then nil[Nat]
+  else cons x (gen (pred x));
+
+let l0 = gen 0;
+let l2 = gen 2;
+
+isnil l0;
+isnil l2;
+
+gen 5;
+head (tail (gen 10));

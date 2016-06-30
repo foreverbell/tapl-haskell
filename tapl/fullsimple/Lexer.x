@@ -19,6 +19,10 @@ tokens :-
   \_                        { \_ -> TokenUScore }
   \(                        { \_ -> TokenLParen }
   \)                        { \_ -> TokenRParen }
+  \{                        { \_ -> TokenLCurly }
+  \}                        { \_ -> TokenRCurly }
+  \[                        { \_ -> TokenLBracket }
+  \]                        { \_ -> TokenRBracket }
   \-\>                      { \_ -> TokenArrow }
   [0-9]+                    { \s -> TokenInt (read s) }
   [a-zA-Z]+                 { \s -> case lookupKeyword s of
@@ -57,6 +61,11 @@ lookupKeyword kw = lookup kw keywords
                , ("pred", TokenPred)
                , ("succ", TokenSucc)
                , ("iszero", TokenIsZero)
+               , ("nil", TokenNil)
+               , ("cons", TokenCons)
+               , ("isnil", TokenIsNil)
+               , ("head", TokenHead)
+               , ("tail", TokenTail)
                , ("unit", TokenUnit)
                , ("lambda", TokenLambda)
                , ("let", TokenLet)
@@ -66,6 +75,7 @@ lookupKeyword kw = lookup kw keywords
                , ("as", TokenAs)
                , ("Bool", TokenBool)
                , ("Nat", TokenNat)
+               , ("List", TokenList)
                , ("Unit", TokenUUnit)
                ]
 

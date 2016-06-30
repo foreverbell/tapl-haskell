@@ -16,6 +16,7 @@ typeMap onvar ty = go ty
   where
     go TypeBool = TypeBool
     go TypeNat = TypeNat
+    go (TypeList ty) = TypeList (go ty)
     go TypeUnit = TypeUnit
     go (TypeRecord fields) = TypeRecord (map (\(f, ty) -> (f, go ty)) fields)
     go (TypeArrow ty1 ty2) = TypeArrow (go ty1) (go ty2)
@@ -48,6 +49,7 @@ typeEqual :: Context -> TermType -> TermType -> Bool
 typeEqual ctx ty1 ty2 = case (ty1, ty2) of
   (TypeBool, TypeBool) -> True
   (TypeNat, TypeNat) -> True
+  (TypeList ty1, TypeList ty2) -> typeEqual ctx ty1 ty2
   (TypeUnit, TypeUnit) -> True
   (TypeRecord fields1, TypeRecord fields2) -> length fields1 == length fields2 && all (\((f1, ty1), (f2, ty2)) -> f1 == f2 && typeEqual ctx ty1 ty2) (zip fields1 fields2)
   (TypeArrow tya1 tya2, TypeArrow tyb1 tyb2) -> typeEqual ctx tya1 tyb1 && typeEqual ctx tya2 tyb2
@@ -56,6 +58,7 @@ typeEqual ctx ty1 ty2 = case (ty1, ty2) of
   (_, TypeVar _) -> typeEqual ctx ty1 (simplifyType ctx ty2)
   _ -> False
 
+-- | Return the type of the given term. For the sake of `TermAscribe`, type is not evaluated or simplified.
 typeOf :: Context -> Term -> TermType
 
 typeOf ctx (TermIfThenElse t1 t2 t3) =
@@ -87,6 +90,29 @@ typeOf ctx (TermIsZero t) =
   if typeEqual ctx (typeOf ctx t) TypeNat
     then TypeBool
     else error "type error: argument of iszero is not a number"
+
+-- Our syntax and typechecker are slightly different from TAPL, see ex11.12.2.
+typeOf _ (TermNil ty) = TypeList ty
+
+typeOf ctx (TermCons t1 t2) = case simplifyType ctx tyList of
+  TypeList ty -> if typeEqual ctx ty (typeOf ctx t1)
+                   then tyList
+                   else error "type error: list head and rest are incompatible"
+  _ -> error "type error: expect list type"
+  where
+    tyList = typeOf ctx t2
+
+typeOf ctx (TermIsNil t) = case simplifyType ctx (typeOf ctx t) of
+  TypeList _ -> TypeBool
+  _ -> error "type error: expect list type"
+
+typeOf ctx (TermHead t) = case simplifyType ctx (typeOf ctx t) of
+  TypeList ty -> ty
+  _ -> error "type error: expect list type"
+
+typeOf ctx (TermTail t) = case simplifyType ctx (typeOf ctx t) of
+  TypeList ty -> TypeList ty
+  _ -> error "type error: expect list type"
 
 typeOf _ TermUnit = TypeUnit
 
