@@ -16,16 +16,10 @@ tokens :-
   \:                        { \_ -> TokenColon }
   \;                        { \_ -> TokenSemi }
   \=                        { \_ -> TokenEq }
-  \|                        { \_ -> TokenVBar }
   \_                        { \_ -> TokenUScore }
-  \<                        { \_ -> TokenLT }
-  \>                        { \_ -> TokenGT }
   \(                        { \_ -> TokenLParen }
   \)                        { \_ -> TokenRParen }
-  \{                        { \_ -> TokenLCurly }
-  \}                        { \_ -> TokenRCurly }
   \-\>                      { \_ -> TokenArrow }
-  \=\=\>                    { \_ -> TokenDDArrow }
   [0-9]+                    { \s -> TokenInt (read s) }
   [a-zA-Z]+                 { \s -> case lookupKeyword s of
                                       Just t -> t
@@ -70,8 +64,6 @@ lookupKeyword kw = lookup kw keywords
                , ("letrec", TokenLetrec)
                , ("type", TokenTypeAlias)
                , ("as", TokenAs)
-               , ("case", TokenCase)
-               , ("of", TokenOf)
                , ("Bool", TokenBool)
                , ("Nat", TokenNat)
                , ("Unit", TokenUUnit)

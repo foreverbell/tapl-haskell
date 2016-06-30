@@ -23,16 +23,12 @@ import           Base
   ':'      { TokenColon }
   ';'      { TokenSemi }
   '='      { TokenEq }
-  '|'      { TokenVBar }
   '_'      { TokenUScore }
-  '<'      { TokenLT }
-  '>'      { TokenGT }
   '('      { TokenLParen }
   ')'      { TokenRParen }
   '{'      { TokenLCurly }
   '}'      { TokenRCurly }
   '->'     { TokenArrow }
-  '==>'    { TokenDDArrow }
   int      { TokenInt $$ }
   lcid     { TokenLCaseId $$ }
   ucid     { TokenUCaseId $$ }
@@ -51,8 +47,6 @@ import           Base
   'letrec' { TokenLetrec }
   'type'   { TokenTypeAlias }
   'as'     { TokenAs }
-  'case'   { TokenCase }
-  'of'     { TokenOf }
   'Bool'   { TokenBool }
   'Nat'    { TokenNat }
   'Unit'   { TokenUUnit }

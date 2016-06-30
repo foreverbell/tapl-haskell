@@ -37,10 +37,9 @@ data Token
   | TokenTrue | TokenFalse | TokenZero
   | TokenUnit
   | TokenBool | TokenNat | TokenUUnit
-  | TokenLambda | TokenLet | TokenIn | TokenLetrec | TokenTypeAlias | TokenAs | TokenCase | TokenOf
-  | TokenArrow | TokenDDArrow
-  | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenVBar | TokenUScore
-  | TokenLT | TokenGT
+  | TokenLambda | TokenLet | TokenIn | TokenLetrec | TokenTypeAlias | TokenAs
+  | TokenArrow
+  | TokenDot | TokenComma | TokenColon | TokenSemi | TokenEq | TokenUScore
   | TokenLParen | TokenRParen
   | TokenLCurly | TokenRCurly
   deriving (Show, Generic, NFData)
