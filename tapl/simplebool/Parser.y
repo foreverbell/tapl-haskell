@@ -36,9 +36,11 @@ import           Base
 %%
 
 Term :: { Term }
-  : AppTerm                               { $1 }
-  | 'lambda' BinderVar ':' Type '.' Term  {% do { dropOneName; return (TermAbs $2 $4 $6); } }
-  | 'if' Term 'then' Term 'else' Term     { TermIfThenElse $2 $4 $6 }
+  : AppTerm                { $1 }
+  | 'lambda' BinderVar ':' Type '.' Term
+                           {% do { dropOneName; return (TermAbs $2 $4 $6); } }
+  | 'if' Term 'then' Term 'else' Term
+                           { TermIfThenElse $2 $4 $6 }
 
 BinderVar :: { String }
   : var                    {% do { addName $1; return $1; } }
@@ -57,8 +59,9 @@ Type :: { TermType }
   : ArrowType              { $1 }
 
 ArrowType :: { TermType }
-  : AtomicType '->' ArrowType { TypeArrow $1 $3 }
-  | AtomicType                { $1 }
+  : AtomicType '->' ArrowType
+                           { TypeArrow $1 $3 }
+  | AtomicType             { $1 }
 
 AtomicType :: { TermType }
   : '(' Type ')'           { $2 }

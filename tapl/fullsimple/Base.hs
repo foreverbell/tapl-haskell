@@ -77,5 +77,5 @@ data TermType
   | TypeUnit
   | TypeRecord [(String, TermType)]
   | TypeArrow TermType TermType
-  | TypeVar Int -- ^ user-defined alias
+  | TypeVar Int -- user-defined alias
   deriving (Show, Generic, NFData)

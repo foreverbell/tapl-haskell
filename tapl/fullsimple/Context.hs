@@ -9,6 +9,7 @@ module Context (
 , pickFreshName
 ) where
 
+import           Data.Char (isAsciiLower)
 import           Data.List (findIndex)
 import qualified Data.HashSet as S
 
@@ -25,7 +26,7 @@ nameToIndex (Context ctx) name = case findIndex (\(var, _) -> var == name) ctx o
   Nothing -> error $ if isVariable
                then "context error: variable " ++ name ++ " is unbound"
                else "context error: type " ++ name ++ " is not in scope"
-  where isVariable = let c = head name in c >= 'a' && c <= 'z'
+  where isVariable = let c = head name in isAsciiLower c
 
 indexToBinding :: Context -> Int -> (String, Binding)
 indexToBinding (Context ctx) index = ctx !! index

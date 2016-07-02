@@ -41,11 +41,14 @@ termShift t delta = termMap (\index var -> if var >= index then TermVar (var + d
 termSubstitute :: Term -> Term -> Term
 termSubstitute t subt = termMap (\index var -> if var == index then termShift subt index else TermVar var) t
 
+-- | The real substitution, i.e. [0 -> subt] t.
 termSubstituteTop :: Term -> Term -> Term
 termSubstituteTop t subt = termShift (termSubstitute t (termShift subt 1)) (-1)
 
 getBindingTerm :: Context -> Int -> Term
-getBindingTerm ctx index = termShift t (index + 1) -- Shift all term variables to meet the current context.
+-- One shall notice that deBruijn index is **relative** to current context,
+-- so when moving one binding to another context, don't forget to relocate (shift by index+1) all term variable indices.
+getBindingTerm ctx index = termShift t (index + 1)
   where
     t = case snd (indexToBinding ctx index) of
           BindTermAlias t _ -> t
@@ -66,6 +69,9 @@ isValue (TermRecord fields) = all (\(_, t) -> isValue t) fields
 isValue (TermAbs _ _ _) = True
 isValue t = isNumericValue t
 
+-- | Extract all variables and their binding terms.
+-- The result list element order shall be consistent with `addPatternName` in Parser.y,
+-- so the following variable substitutions are executed in the right order.
 evaluatePattern :: Term -> Pattern -> [(String, Term)]
 evaluatePattern t (PatternVar var) = [(var, t)]
 evaluatePattern (TermRecord fields) (PatternRecord pats) = go pats
@@ -146,9 +152,9 @@ evaluate1 _ (TermProj v@(TermRecord fields) f)
 evaluate1 ctx (TermProj t f) = TermProj <$> evaluate1 ctx t <*> pure f
 
 evaluate1 _ (TermLet pat v t)
-  | isValue v = Just $ foldl (\t subt -> termSubstituteTop t subt) t (map snd $ evaluatePattern v pat)
+  | isValue v = Just $ foldl termSubstituteTop t (map snd $ evaluatePattern v pat)
 
-evaluate1 ctx (TermLet var t1 t2) = TermLet var <$> evaluate1 ctx t1 <*> pure t2
+evaluate1 ctx (TermLet pat t1 t2) = TermLet pat <$> evaluate1 ctx t1 <*> pure t2
 
 evaluate1 _ t1@(TermFix (TermAbs _ _ t2)) = Just $ termSubstituteTop t2 t1
 

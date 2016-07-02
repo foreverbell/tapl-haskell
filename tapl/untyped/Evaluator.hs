@@ -27,7 +27,7 @@ termSubstitute t subt = go 0 subt t
     go index subt (TermApp t1 t2) = TermApp (go index subt t1) (go index subt t2)
 
 -- | Call-by-value evalutation strategy, treat abstraction term as value.
--- | A redex is reducible only if its right-hand is evaluated to value.
+-- The redex is reducible only if its right-hand is evaluated to value.
 isValue :: Term -> Bool
 isValue (TermAbs _ _) = True
 isValue _ = False

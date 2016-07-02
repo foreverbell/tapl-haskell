@@ -27,8 +27,10 @@ import           Base
 %%
 
 Term :: { Term }
-  : AppTerm                      { $1 }
-  | 'lambda' BinderVar '.' Term  {% do { dropOneName; return (TermAbs $2 $4); } }
+  : AppTerm
+                           { $1 }
+  | 'lambda' BinderVar '.' Term
+                           {% do { dropOneName; return (TermAbs $2 $4); } }
 
 BinderVar :: { String }
   : var                    {% do { addName $1; return $1; } }

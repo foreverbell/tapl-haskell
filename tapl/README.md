@@ -20,19 +20,19 @@ Typed arithmetic expressions.
 
 ## simplebool: Chapter 9-10
 
-Barebone typed lambda calculus with boolean primitives.
+Barebone typed lambda calculus with boolean primitive.
 
 ## fullsimple: Chapter 11
 
-Typed lambda calculus with a fistful of extensions.
+Typed lambda calculus with a fistful of extensions. Including but not limited to,
 
-* type alias, variable definition and sequencing
-* boolean and natural number primitives
+* sequencing (including both type alias and variable definition)
+* boolean and natural number primitive
 * unit type
 * wildcard
 * record
 * ascription
 * let binding
 * pattern matching
-* recursion
+* general recursion
 * list

@@ -34,7 +34,7 @@ getBindingType ctx index = typeShift ty (index + 1) -- Shift all type variables 
            BindTermAlias _ ty -> ty
            _ -> undefined
 
--- | Simplify type to the form that the outer most is not TypeVar.
+-- | Simplify type so that the outer most is not TypeVar.
 simplifyType :: Context -> TermType -> TermType
 simplifyType ctx (TypeVar var) = simplifyType ctx (getBindingType ctx var)
 simplifyType _ ty = ty
@@ -91,7 +91,7 @@ typeOf ctx (TermIsZero t) =
     then TypeBool
     else error "type error: argument of iszero is not a number"
 
--- Our syntax and typechecker are slightly different from TAPL, see ex11.12.2.
+-- Our syntax and typechecker are slightly different from TAPL's original implenmentation, see ex 11.12.2.
 typeOf _ (TermNil ty) = TypeList ty
 
 typeOf ctx (TermCons t1 t2) = case simplifyType ctx tyList of
