@@ -6,8 +6,8 @@ head l;
 head (tail l);
 head (tail (tail l));
 
-letrec gen:Nat->List[Nat] = 
-  lambda x:Nat. 
+letrec gen:Nat->List[Nat] =
+  lambda x:Nat.
     if iszero x
       then nil[Nat]
       else cons x (gen (pred x));
@@ -27,7 +27,7 @@ letrec plus:Nat->Nat->Nat =
       then b
       else plus (pred a) (succ b);
 
-letrec sum:List[Nat]->Nat = 
+letrec sum:List[Nat]->Nat =
   lambda l:List[Nat].
     if isnil l
       then 0
