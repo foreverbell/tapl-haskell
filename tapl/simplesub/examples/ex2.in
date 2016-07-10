@@ -1,0 +1,1 @@
+(lambda r:{x:Bool}. r.x) {x=true, y=false, z=false}

@@ -59,3 +59,12 @@ executable fullsimple
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Context Evaluator Lexer Parser PPrint Type
+
+executable simplesub
+  hs-source-dirs:      simplesub
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
+  build-tools:         alex, happy
+  ghc-options:         -O2 -W -fwarn-tabs
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Type
