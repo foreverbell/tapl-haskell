@@ -62,12 +62,12 @@ typeEqual ctx ty1 ty2 = case (ty1, ty2) of
 -- | Return the type of the given term. For the sake of `TermAscribe`, type is not evaluated or simplified.
 typeOf :: Context -> Term -> TermType
 
-typeOf ctx (TermIfThenElse t1 t2 t3) =
-  if typeEqual ctx (typeOf ctx t1) TypeBool
-    then let ty2 = typeOf ctx t2
-             ty3 = typeOf ctx t3
-          in if typeEqual ctx ty2 ty3
-               then ty2
+typeOf ctx (TermIfThenElse t t1 t2) =
+  if typeEqual ctx (typeOf ctx t) TypeBool
+    then let ty1 = typeOf ctx t1
+             ty2 = typeOf ctx t2
+          in if typeEqual ctx ty1 ty2
+               then ty1
                else error "type error: arms of conditional have different types"
     else error "type error: guard of conditional not a boolean"
 
