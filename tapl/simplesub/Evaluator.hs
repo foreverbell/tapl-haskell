@@ -50,13 +50,13 @@ evaluate1 (TermIfThenElse t t1 t2) = TermIfThenElse <$> evaluate1 t <*> pure t1 
 evaluate1 (TermRecord fields) = TermRecord <$> go fields
   where
     go [] = Nothing
-    go ((f,t):rest)
+    go ((f, t) : rest)
       | isValue t = do
           rest' <- go rest
-          return ((f,t):rest')
+          return ((f, t) : rest')
       | otherwise = do
           t' <- evaluate1 t
-          return ((f,t'):rest)
+          return ((f, t') : rest)
 
 {- E-ProjRcd -}
 evaluate1 (TermProj v@(TermRecord fields) f)

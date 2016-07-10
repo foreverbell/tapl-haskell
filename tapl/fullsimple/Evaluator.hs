@@ -136,13 +136,13 @@ evaluate1 ctx (TermTail t) = TermTail <$> evaluate1 ctx t
 evaluate1 ctx (TermRecord fields) = TermRecord <$> go ctx fields
   where
     go _ [] = Nothing
-    go ctx ((f,t):rest)
+    go ctx ((f, t) : rest)
       | isValue t = do
           rest' <- go ctx rest
-          return ((f,t):rest')
+          return ((f, t) : rest')
       | otherwise = do
           t' <- evaluate1 ctx t
-          return ((f,t'):rest)
+          return ((f, t') : rest)
 
 evaluate1 _ (TermProj v@(TermRecord fields) f)
   | isValue v = case find (\(f1, _) -> f1 == f) fields of
