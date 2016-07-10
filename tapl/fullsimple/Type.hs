@@ -1,6 +1,7 @@
 module Type (
   typeEqual
 , typeOf
+, typeOfPattern
 , simplifyType
 , evaluateType
 ) where
@@ -132,20 +133,9 @@ typeOf ctx (TermProj t field) = case simplifyType ctx (typeOf ctx t) of
 typeOf ctx (TermLet pat t1 t2) = typeShift (typeOf ctx' t2) (-1)
   where
     ty1 = typeOf ctx t1
-    ctxTop = ctx
-    ctx' = walkPattern ctx ty1 pat
+    ctx' = foldr add ctx (typeOfPattern ctx ty1 pat)
       where
-        walkPattern :: Context -> TermType -> Pattern -> Context
-        walkPattern ctx ty (PatternVar var) = addBinding ctx var (BindVar ty)
-        walkPattern ctx ty (PatternRecord pats) = case simplifyType ctxTop ty of
-          TypeRecord fields -> go ctx pats
-            where
-              go :: Context -> [(String, Pattern)] -> Context
-              go ctx [] = ctx
-              go ctx ((index, pat) : pats) = case find (\(index2, _) -> index == index2) fields of
-                                               Just (_, ty) -> go (walkPattern ctx ty pat) pats
-                                               Nothing -> error $ "type error: field " ++ index ++ " not found in pattern matching"
-          _ -> error "type error: expected record type"
+        add (var, ty) ctx = addBinding ctx var (BindVar ty)
 
 typeOf ctx (TermFix t) = case simplifyType ctx (typeOf ctx t) of
   TypeArrow ty1 ty2 ->
@@ -176,3 +166,15 @@ typeOf ctx (TermAscribe t ty) =
     else error "type error: body of as-term does not have the expected type"
   where
     ty0 = typeOf ctx t
+
+typeOfPattern :: Context -> TermType -> Pattern -> [(String, TermType)]
+typeOfPattern _ ty (PatternVar var) = [(var, ty)]
+typeOfPattern ctx ty (PatternRecord pats) = case simplifyType ctx ty of
+  TypeRecord fields -> go pats
+    where
+      go :: [(String, Pattern)] -> [(String, TermType)]
+      go [] = []
+      go ((index, pat) : pats) = case find (\(index2, _) -> index == index2) fields of
+                                   Just (_, ty) -> go pats ++ typeOfPattern ctx ty pat
+                                   Nothing -> error $ "type error: field " ++ index ++ " not found in pattern matching"
+  _ -> error "type error: expected record type"

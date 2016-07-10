@@ -8,3 +8,7 @@ axis1;
 axis2;
 
 let {{a = value} = z, b = x} = {x = 1, y = 2, z = {value = 3}} in a;
+
+let {c=a, d=b} = {a=true, b=1};
+c;
+d;

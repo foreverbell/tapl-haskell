@@ -1,6 +1,6 @@
 module Evaluator (
   evaluate
-, evaluatePattern
+, unpackPattern
 ) where
 
 import Base
@@ -71,17 +71,17 @@ isValue t = isNumericValue t
 
 -- | Extract all variables and their binding terms.
 -- The result list element order shall be consistent with `addPatternName` in Parser.y,
--- so the following variable substitutions are executed in the right order.
-evaluatePattern :: Term -> Pattern -> [(String, Term)]
-evaluatePattern t (PatternVar var) = [(var, t)]
-evaluatePattern (TermRecord fields) (PatternRecord pats) = go pats
+-- so the following variable substitutions are executed in the correct order.
+unpackPattern :: Term -> Pattern -> [(String, Term)]
+unpackPattern t (PatternVar var) = [(var, t)]
+unpackPattern (TermRecord fields) (PatternRecord pats) = go pats
   where
     go :: [(String, Pattern)] -> [(String, Term)]
     go [] = []
     go ((index, pat) : pats) = case find (\(index2, _) -> index == index2) fields of
-                                 Just (_, t) -> go pats ++ evaluatePattern t pat
+                                 Just (_, t) -> go pats ++ unpackPattern t pat
                                  _ -> undefined
-evaluatePattern _ _ = undefined
+unpackPattern _ _ = undefined
 
 evaluate1 :: Context -> Term -> Maybe Term
 
@@ -152,7 +152,7 @@ evaluate1 _ (TermProj v@(TermRecord fields) f)
 evaluate1 ctx (TermProj t f) = TermProj <$> evaluate1 ctx t <*> pure f
 
 evaluate1 _ (TermLet pat v t)
-  | isValue v = Just $ foldl termSubstituteTop t (map snd $ evaluatePattern v pat)
+  | isValue v = Just $ foldl termSubstituteTop t (snd <$> unpackPattern v pat)
 
 evaluate1 ctx (TermLet pat t1 t2) = TermLet pat <$> evaluate1 ctx t1 <*> pure t2
 

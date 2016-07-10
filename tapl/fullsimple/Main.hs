@@ -8,10 +8,10 @@ import Text.Printf (printf)
 
 import Base
 import Context
-import Evaluator (evaluate, evaluatePattern)
+import Evaluator (evaluate, unpackPattern)
 import Parser (parseTree)
 import PPrint (pprint, pprintType)
-import Type (typeOf, evaluateType)
+import Type (typeOf, typeOfPattern, evaluateType)
 
 executeStatement :: Context -> Statement -> IO Context
 executeStatement ctx (BindType name ty) = do
@@ -20,14 +20,13 @@ executeStatement ctx (BindType name ty) = do
   return $ addBinding ctx name (BindTypeAlias ty')
 
 executeStatement ctx (BindLet pat t) = do
-  let tyDummy = typeOf ctx (TermLet pat t (TermUnit)) -- This is HACK to check pattern matching typechecks.
-  let ty = tyDummy `deepseq` typeOf ctx t
-  let val = ty `deepseq` evaluate ctx t
-  foldM merge ctx (reverse $ evaluatePattern val pat)
+  let ty = typeOf ctx t
+  let tyPat = ty `deepseq` typeOfPattern ctx ty pat
+  let val = tyPat `deepseq` evaluate ctx t
+  foldM add ctx (reverse $ zip (unpackPattern val pat) tyPat)
     where
-      merge ctx (name, t) = do
-        let ty = typeOf ctx t
-        let val = ty `deepseq` evaluate ctx t
+      add ctx ((name, t), (_, ty)) = do
+        let val = evaluate ctx t
         putStrLn $ "[Variable] " ++ name ++ " = " ++ pprint ctx val ++ " : " ++ pprintType ctx ty
         return $ addBinding ctx name (BindTermAlias val ty)
 
