@@ -19,7 +19,7 @@ data Token
   | TokenArrow | TokenBool
   | TokenColon
   | TokenLambda | TokenVar String | TokenDot
-  | TokenLBracket | TokenRBracket
+  | TokenLParen | TokenRParen
   deriving (Show, Generic, NFData)
 
 data Term

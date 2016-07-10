@@ -3,8 +3,8 @@ module PPrint (
 , pprintType
 ) where
 
-import Context
 import Base
+import Context
 
 import Text.Printf (printf)
 

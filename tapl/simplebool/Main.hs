@@ -13,10 +13,10 @@ import Type (typeOf)
 
 run :: String -> IO ()
 run str = do
-  let term = parseTree str
-  let ttype = term `deepseq` typeOf term
-  let val = ttype `deepseq` evaluate term
-  putStrLn $ pprint val ++ " : " ++ pprintType ttype
+  let t = parseTree str
+  let ty = t `deepseq` typeOf t
+  let val = ty `deepseq` evaluate t
+  putStrLn $ pprint val ++ " : " ++ pprintType ty
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName

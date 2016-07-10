@@ -11,8 +11,8 @@ import Base
 
 tokens :-
   $white+                ;
-  \(                     { \_ -> TokenLBracket }
-  \)                     { \_ -> TokenRBracket }
+  \(                     { \_ -> TokenLParen }
+  \)                     { \_ -> TokenRParen }
   \.                     { \_ -> TokenDot }
   \:                     { \_ -> TokenColon }
   \-\>                   { \_ -> TokenArrow }

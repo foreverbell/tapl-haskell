@@ -19,8 +19,8 @@ import           Base
 %error { parseError }
 
 %token
-  '('      { TokenLBracket }
-  ')'      { TokenRBracket }
+  '('      { TokenLParen }
+  ')'      { TokenRParen }
   '.'      { TokenDot }
   ':'      { TokenColon }
   '->'     { TokenArrow }
