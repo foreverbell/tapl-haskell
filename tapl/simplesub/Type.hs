@@ -54,7 +54,7 @@ meet :: TermType -> TermType -> TermType
 meet TypeTop ty = ty
 meet ty TypeTop = ty
 meet TypeBool TypeBool = TypeBool
-meet (TypeArrow tyS1 tyS2) (TypeArrow tyT1 tyT2) = 
+meet (TypeArrow tyS1 tyS2) (TypeArrow tyT1 tyT2) =
   TypeArrow (join tyS1 tyT1) (meet tyS2 tyT2)
 meet (TypeRecord fields1) (TypeRecord fields2) = TypeRecord $ union (sortFields fields1) (sortFields fields2)
   where
@@ -115,7 +115,7 @@ go ctx (TermAbs var ty t) = TypeArrow ty (go ctx' t)
 
 {- TA-App -}
 go ctx (TermApp t1 t2) = case ty1 of
-  TypeArrow ty3 ty4 -> 
+  TypeArrow ty3 ty4 ->
     if isSubtype ty2 ty3
       then ty4
       else error "type error: parameter type mismatch"
