@@ -1,0 +1,8 @@
+[Variable] plus = lambda a:Nat. lambda b:Nat. if iszero a then b else fix (lambda plus:Nat->Nat->Nat. lambda a_1:Nat. lambda b_1:Nat. if iszero a_1 then b_1 else plus (pred a_1) (succ b_1)) (pred a) (succ b) : Nat->Nat->Nat
+[Variable] equal = lambda a:Nat. lambda b:Nat. if iszero a then iszero b else if iszero b then false else fix (lambda equal:Nat->Nat->Bool. lambda a_1:Nat. lambda b_1:Nat. if iszero a_1 then iszero b_1 else if iszero b_1 then false else equal (pred a_1) (pred b_1)) (pred a) (pred b) : Nat->Nat->Bool
+[Variable] times = lambda a:Nat. lambda b:Nat. if iszero a then 0 else plus b (fix (lambda times:Nat->Nat->Nat. lambda a_1:Nat. lambda b_1:Nat. if iszero a_1 then 0 else plus b_1 (times (pred a_1) b_1)) (pred a) b) : Nat->Nat->Nat
+[Variable] factorial = lambda n:Nat. if iszero n then 1 else times n (fix (lambda factorial:Nat->Nat. lambda n_1:Nat. if iszero n_1 then 1 else times n_1 (factorial (pred n_1))) (pred n)) : Nat->Nat
+false : Bool
+true : Bool
+120 : Nat
+89 : Nat

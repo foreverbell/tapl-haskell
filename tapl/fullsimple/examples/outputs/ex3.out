@@ -1,0 +1,11 @@
+[Type] {x:Nat,y:Nat,z:{value:Nat}}
+[Variable] pt = {x=1,y=2,z={value=3}} : Point
+[Variable] axis1 = 3 : Nat
+[Variable] axis2 = 1 : Nat
+3 : Nat
+1 : Nat
+3 : Nat
+[Variable] c = true : Bool
+[Variable] d = 1 : Nat
+true : Bool
+1 : Nat

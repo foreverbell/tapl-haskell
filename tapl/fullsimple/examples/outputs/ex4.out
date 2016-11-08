@@ -1,0 +1,15 @@
+nil[Nat] : List[Nat]
+[Variable] l = cons (1) (cons (2) (cons (3) nil[Nat])) : List[Nat]
+1 : Nat
+2 : Nat
+3 : Nat
+[Variable] gen = lambda x:Nat. if iszero x then nil[Nat] else cons x (fix (lambda gen:Nat->List[Nat]. lambda x_1:Nat. if iszero x_1 then nil[Nat] else cons x_1 (gen (pred x_1))) (pred x)) : Nat->List[Nat]
+[Variable] l0 = nil[Nat] : List[Nat]
+[Variable] l2 = cons (2) (cons (1) nil[Nat]) : List[Nat]
+true : Bool
+false : Bool
+cons (5) (cons (4) (cons (3) (cons (2) (cons (1) nil[Nat])))) : List[Nat]
+9 : Nat
+[Variable] plus = lambda a:Nat. lambda b:Nat. if iszero a then b else fix (lambda plus:Nat->Nat->Nat. lambda a_1:Nat. lambda b_1:Nat. if iszero a_1 then b_1 else plus (pred a_1) (succ b_1)) (pred a) (succ b) : Nat->Nat->Nat
+[Variable] sum = lambda l_1:List[Nat]. if isnil l_1 then 0 else plus (head l_1) (fix (lambda sum:List[Nat]->Nat. lambda l_2:List[Nat]. if isnil l_2 then 0 else plus (head l_2) (sum (tail l_2))) (tail l_1)) : List[Nat]->Nat
+1275 : Nat

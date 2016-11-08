@@ -1,26 +1,12 @@
 module Main where
 
-import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
 import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
+import TAPL.Meow (exec_)
 import Text.Printf (printf)
 
-import Base
-import Evaluator (evaluate)
-import Parser (parseTree)
-import PPrint (pprint, pprintType)
-import Type (typeOf)
-
-run :: String -> IO ()
-run str = do
-  let t = parseTree str
-  let ty = t `deepseq` typeOf t
-  case ty of
-    TypeTop -> putStrLn "warning: typechecker detects Top type"
-    _ -> return ()
-  let val = ty `deepseq` evaluate t
-  putStrLn $ pprint val ++ " : " ++ pprintType ty
+import Runner (run)
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName
@@ -34,6 +20,6 @@ main = do
       forever $ do
         putStr "simplesub> "
         hFlush stdout
-        run =<< getLine
-    [sourceFile] -> run =<< readFile sourceFile
+        mapM_ putStrLn =<< exec_ . run =<< getLine
+    [sourceFile] -> mapM_ putStrLn =<< exec_ . run =<< readFile sourceFile
     _ -> usage

@@ -10,19 +10,28 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      tapl-base
   default-language:    Haskell2010
-  build-depends:       base
+  build-depends:       base, mtl, transformers
   ghc-options:         -O2 -W -fwarn-tabs
-  exposed-modules:
-    TAPL.Alex.Base
+  exposed-modules:     TAPL.Alex, TAPL.Meow
 
 executable arith
   hs-source-dirs:      arith
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Evaluator Lexer Parser PPrint
+  other-modules:       Base Evaluator Lexer Parser PPrint Runner
+
+test-suite test-arith
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      arith
+  main-is:             Test.hs 
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5, tapl, QuickCheck, array, deepseq, mtl, transformers
+  build-tools:         alex, happy
+  ghc-options:         -O2 -W -fwarn-tabs
+  other-modules:       Base Evaluator Lexer Parser PPrint Runner
 
 executable untyped
   hs-source-dirs:      untyped
@@ -31,13 +40,23 @@ executable untyped
   build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Context Evaluator Lexer Parser PPrint
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner
+
+test-suite test-untyped
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      untyped
+  main-is:             Test.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5, tapl, QuickCheck, array, deepseq, unordered-containers, mtl, transformers
+  build-tools:         alex, happy
+  ghc-options:         -O2 -W -fwarn-tabs
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner
 
 executable tyarith
   hs-source-dirs:      tyarith
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq
+  build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
   other-modules:       Base Evaluator Lexer Parser PPrint Type
@@ -49,7 +68,17 @@ executable simplebool
   build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Context Evaluator Lexer Parser PPrint Type
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner Type
+
+test-suite test-simplebool
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      simplebool
+  main-is:             Test.hs 
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5, tapl, QuickCheck, array, deepseq, unordered-containers, mtl, transformers
+  build-tools:         alex, happy
+  ghc-options:         -O2 -W -fwarn-tabs
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner Type
 
 executable fullsimple
   hs-source-dirs:      fullsimple
@@ -58,7 +87,17 @@ executable fullsimple
   build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Context Evaluator Lexer Parser PPrint Type
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner Type
+
+test-suite test-fullsimple
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      fullsimple
+  main-is:             Test.hs 
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5, tapl, QuickCheck, array, deepseq, unordered-containers, mtl, transformers
+  build-tools:         alex, happy
+  ghc-options:         -O2 -W -fwarn-tabs
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner Type
 
 executable simplesub
   hs-source-dirs:      simplesub
@@ -67,4 +106,14 @@ executable simplesub
   build-depends:       base >= 4.7 && < 5, tapl, array, deepseq, unordered-containers, mtl, transformers
   build-tools:         alex, happy
   ghc-options:         -O2 -W -fwarn-tabs
-  other-modules:       Base Context Evaluator Lexer Parser PPrint Type
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner Type
+
+test-suite test-simplesub
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      simplesub
+  main-is:             Test.hs 
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5, tapl, QuickCheck, array, deepseq, unordered-containers, mtl, transformers
+  build-tools:         alex, happy
+  ghc-options:         -O2 -W -fwarn-tabs
+  other-modules:       Base Context Evaluator Lexer Parser PPrint Runner Type

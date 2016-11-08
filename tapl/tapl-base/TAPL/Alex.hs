@@ -1,4 +1,4 @@
-module TAPL.Alex.Base (
+module TAPL.Alex (
   AlexInput
 , alexInputPrevChar
 , alexGetByte

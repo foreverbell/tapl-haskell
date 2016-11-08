@@ -1,20 +1,12 @@
 module Main where
 
-import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
 import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
+import TAPL.Meow (exec_)
 import Text.Printf (printf)
 
-import Evaluator (evaluate)
-import Parser (parseTree)
-import PPrint (pprint)
-
-run :: String -> IO ()
-run str = do
-  let term = parseTree str
-  let val = term `deepseq` evaluate term
-  putStrLn $ pprint val
+import Runner (run)
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName
@@ -28,6 +20,6 @@ main = do
       forever $ do
         putStr "untyped> "
         hFlush stdout
-        run =<< getLine
-    [sourceFile] -> run =<< readFile sourceFile
+        mapM_ putStrLn =<< exec_ . run =<< getLine
+    [sourceFile] -> mapM_ putStrLn =<< exec_ . run =<< readFile sourceFile
     _ -> usage

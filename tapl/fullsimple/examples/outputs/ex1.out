@@ -1,0 +1,17 @@
+[Type] Nat->Nat
+[Type] (Nat->Nat)->Nat->Nat
+[Type] ((Nat->Nat)->Nat->Nat)->Bool
+lambda x:Nat->Nat. x : T2
+lambda x:T1. x : T1->T1
+unit : Unit
+lambda _:Bool. unit : Bool->Unit
+lambda x:Nat. x : Nat->Nat
+true : Bool
+[Variable] x = 42 : Nat
+42 : Nat
+[Variable] foo = lambda x_1:Nat. succ (succ x_1) : Nat->Nat
+4 : Nat
+true : Bool
+{x=true,y=false} : {x:Bool,y:Bool}
+true : Bool
+false : Bool

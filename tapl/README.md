@@ -40,5 +40,3 @@ Typed lambda calculus with a fistful of extensions. Including but not limited to
 ## simplesub: Chapter 15-17
 
 Typed lambda calculus with algorithmic subtyping, including record, `Top` type (`Object` in Java) and if-conditional.
-
-TODO: `Bot` type.

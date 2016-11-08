@@ -6,7 +6,7 @@ module Lexer (
 
 import Data.Char (isAsciiLower)
 
-import TAPL.Alex.Base
+import TAPL.Alex
 import Base
 
 }
