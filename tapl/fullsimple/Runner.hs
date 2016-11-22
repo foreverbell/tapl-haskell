@@ -11,13 +11,12 @@ import Context
 import Evaluator (evaluate, unpackPattern)
 import Parser (parseTree)
 import PPrint (pprint, pprintType)
-import Type (typeOf, typeOfPattern, evaluateType)
+import Type (typeOf, typeOfPattern)
 
 executeStatement :: Context -> Statement -> Meow Context
 executeStatement ctx (BindType name ty) = do
-  let ty' = evaluateType ctx ty
-  meow $ "[Type] " ++ pprintType ctx ty'
-  return $ addBinding ctx name (BindTypeAlias ty')
+  meow $ "[Type] " ++ pprintType ctx ty
+  return $ addBinding ctx name (BindTypeAlias ty)
 
 executeStatement ctx (BindLet pat t) = do
   let ty = typeOf ctx t

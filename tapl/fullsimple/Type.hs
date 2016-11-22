@@ -3,7 +3,6 @@ module Type (
 , typeOf
 , typeOfPattern
 , simplifyType
-, evaluateType
 ) where
 
 import           Base
@@ -39,12 +38,6 @@ getBindingType ctx index = typeShift ty (index + 1) -- Shift all type variables 
 simplifyType :: Context -> TermType -> TermType
 simplifyType ctx (TypeVar var) = simplifyType ctx (getBindingType ctx var)
 simplifyType _ ty = ty
-
--- | Evaluate type to eliminate all TypeVars.
-evaluateType :: Context -> TermType -> TermType
-evaluateType ctx (TypeVar var) = evaluateType ctx (getBindingType ctx var)
-evaluateType ctx (TypeArrow ty1 ty2) = TypeArrow (evaluateType ctx ty1) (evaluateType ctx ty2)
-evaluateType _ ty = ty
 
 typeEqual :: Context -> TermType -> TermType -> Bool
 typeEqual ctx ty1 ty2 = case (ty1, ty2) of
