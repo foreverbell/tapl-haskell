@@ -1,3 +1,1 @@
-# unlimited-plt-toys
-
-Under construction.
+# TAPL Haskell
