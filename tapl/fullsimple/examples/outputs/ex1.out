@@ -1,11 +1,11 @@
 [Type] Nat->Nat
-[Type] (Nat->Nat)->Nat->Nat
-[Type] ((Nat->Nat)->Nat->Nat)->Bool
+[Type] T1->T1
+[Type] T2->Bool
 lambda x:Nat->Nat. x : T2
 lambda x:T1. x : T1->T1
 unit : Unit
 lambda _:Bool. unit : Bool->Unit
-lambda x:Nat. x : Nat->Nat
+lambda x:Nat. x : T1
 true : Bool
 [Variable] x = 42 : Nat
 42 : Nat

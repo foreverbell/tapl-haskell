@@ -1,0 +1,5 @@
+[Variable] plus = lambda a:Nat. lambda b:Nat. if iszero a then b else fix (lambda plus:Nat->Nat->Nat. lambda a_1:Nat. lambda b_1:Nat. if iszero a_1 then b_1 else plus (pred a_1) (succ b_1)) (pred a) (succ b) : Nat->Nat->Nat
+[Variable] y = 1 : Nat
+[Variable] f = lambda x:Nat. plus x y : Nat->Nat
+[Variable] y = 2 : Nat
+2 : Nat

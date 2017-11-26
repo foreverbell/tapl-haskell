@@ -9,7 +9,7 @@ import Context (makeEmptyContext)
 import Runner (run)
 
 testCount :: Int
-testCount = 4
+testCount = 5
 
 main :: IO ()
 main = do

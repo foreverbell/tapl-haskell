@@ -1,0 +1,10 @@
+letrec plus:Nat->Nat->Nat =
+  lambda a:Nat b:Nat.
+    if iszero a
+      then b
+      else plus (pred a) (succ b);
+
+let y = 1;
+let f = lambda x:Nat. plus x y;
+let y = 2;
+f 1;
