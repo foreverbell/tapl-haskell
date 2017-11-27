@@ -11,7 +11,7 @@ import Data.Bits (shiftR, (.&.))
 import Data.Char (ord)
 import Data.Word (Word8)
 
-import Base
+import Parser
 
 }
 

@@ -5,13 +5,14 @@ import System.Environment (getProgName, getArgs)
 import System.IO (stdout, hFlush)
 import Text.Printf (printf)
 
+import           Lexer (scanTokens)
 import           Parser (parseTree)
 import qualified NFA as NFA
 import qualified VM as VM
 
 run :: String -> String -> IO ()
 run regex text = do
-  case parseTree regex of
+  case (parseTree =<< scanTokens regex) of
     Left err -> putStrLn err
     Right ast -> do
       let program = VM.compile ast
@@ -21,7 +22,8 @@ run regex text = do
       putStrLn "\n"
       putStrLn $ "VM result: " ++ show (VM.accept program text)
       putStrLn $ "NFA result: " ++ show (NFA.accept nfa text)
-  where showLine l p = printf " % 3d " l ++ p
+  where
+    showLine l p = printf " % 3d " l ++ p
 
 usage :: IO ()
 usage = printf "usage: %s <infile>\n" =<< getProgName

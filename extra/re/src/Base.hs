@@ -1,21 +1,10 @@
 module Base (
-  Token (..)
-, RE (..)
+  RE (..)
 , SetItem (..)
 , nub'
 ) where
 
 import Data.List (group, sort)
-
-data Token
-  = TokenChar Char
-  | TokenDot
-  | TokenPlus | TokenHyphen | TokenStar
-  | TokenCircumflex
-  | TokenVBar
-  | TokenOBrack | TokenCBrack
-  | TokenOParen | TokenCParen
-  deriving (Show)
 
 data RE
   = REConcatenation RE RE

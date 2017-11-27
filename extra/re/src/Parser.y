@@ -2,10 +2,10 @@
 
 module Parser (
   parseTree
+, Token (..)
 ) where
 
 import Base
-import Lexer (scanTokens)
 
 }
 
@@ -77,8 +77,18 @@ SetItem :: { SetItem }
 
 {
 
-parseTree :: String -> Either String RE
-parseTree str = parse =<< scanTokens str
+data Token
+  = TokenChar Char
+  | TokenDot
+  | TokenPlus | TokenHyphen | TokenStar
+  | TokenCircumflex
+  | TokenVBar
+  | TokenOBrack | TokenCBrack
+  | TokenOParen | TokenCParen
+  deriving (Show)
+
+parseTree :: [Token] -> Either String RE
+parseTree = parse
 
 parseError :: [Token] -> Either String a
 parseError _ = Left "parse error"
